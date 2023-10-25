@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS.extend(['users'])  # local apps
-INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'djoser',
+INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
 
 MIDDLEWARE = [
@@ -212,3 +212,27 @@ AUTH_COOKIE_PATH = '/'
 AUTH_COOKIE_SAMESITE = 'None'
 
 AUTH_USER_MODEL = 'users.UserAccount'
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = getenv('GOOGLE_AUTH_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = getenv('GOOGLE_AUTH_SECRET_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = getenv('VK_AUTH_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = getenv('VK_AUTH_SECRET_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+
+SOCIAL_AUTH_GITHUB_KEY = getenv('GH_AUTH_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = getenv('GH_AUTH_SECRET_KEY')
+SOCIAL_AUTH_GITHUB_SCOPE = ['email']
