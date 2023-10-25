@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    volumes:
+      - static:/app/server/static
+      - sql_db:/app/server/sql_db
+    restart: always
+    ports:
+      - 8100:8100
+    env_file:
+      - ./server/.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.3
+    hostname: db
+    container_name: db
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - ./server/.env
+    volumes:
+      - local_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  static:
+  sql_db:
+  local_pg_data:
+    driver: 'local'
