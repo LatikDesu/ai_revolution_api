@@ -29,6 +29,8 @@ if path.isfile(dotenv_file):
 
 DEVELOPMENT_MODE = getenv('DEVELOPMENT_MODE', 'False') == 'True'
 
+APIKEY = getenv('OPENAI_APIKEY')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -51,9 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
 ]
 
-INSTALLED_APPS.extend(['users'])  # local apps
+INSTALLED_APPS.extend(['users', 'gpt'])  # local apps
 INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
 
