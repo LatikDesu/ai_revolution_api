@@ -53,10 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
 ]
 
-INSTALLED_APPS.extend(['users', 'gpt'])  # local apps
+INSTALLED_APPS.extend(['users', 'conversations'])  # local apps
 INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
 

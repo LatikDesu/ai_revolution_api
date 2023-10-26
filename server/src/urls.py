@@ -26,11 +26,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('djoser.urls')),
     path('api/', include('users.urls')),
-    path('api/gpt/', include('gpt.urls')),
-    
+    path('api/conversations/', include('conversations.urls')),
+
     path('api-auth/', include('rest_framework.urls')),
-    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('docs/', schema_view.with_ui('swagger',
+         cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc',
+         cache_timeout=0), name='schema-redoc'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -22,29 +22,3 @@ def send_request_to_gpt(conversation):
     except openai.error.RateLimitError as e:
         raise ValueError(f"OpenAI API request exceeded rate limit: {e}")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def send_code_to_api(code):
-#     from api import mock_data
-#     return mock_data.json_data[code.replace("\"", "'")]
