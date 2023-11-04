@@ -25,5 +25,6 @@ LOG_CONFIG=${LOG_CONFIG:-/app/server/logging.ini}
 
 /app/server/scripts/migrations.sh
 /app/server/scripts/createsuperuser.sh
+/app/server/scripts/loaddata.sh
 
 /opt/venv/bin/uvicorn --reload --proxy-headers --host $HOST --port $PORT --log-config $LOG_CONFIG "$APP_MODULE"

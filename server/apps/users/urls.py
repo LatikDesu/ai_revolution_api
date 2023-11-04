@@ -13,6 +13,7 @@ urlpatterns = [
         CustomProviderAuthView.as_view(),
         name='provider-auth'
     ),
+
     path('jwt/create/', CustomTokenObtainPairView.as_view()),
     path('jwt/refresh/', CustomTokenRefreshView.as_view()),
     path('jwt/verify/', CustomTokenVerifyView.as_view()),

@@ -24,9 +24,11 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "fields": (
+                    "username",
                     "first_name",
                     "last_name",
                     "email",
+                    "tokens",
                 )
             },
         ),
@@ -40,6 +42,7 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
+                    "username",
                     "email",
                     "password1",
                     "password2",

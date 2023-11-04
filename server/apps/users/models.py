@@ -39,9 +39,12 @@ class UserAccountManager(BaseUserManager):
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    username = models.CharField(max_length=64, unique=True,)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
     email = models.EmailField(unique=True, max_length=255)
+
+    tokens = models.IntegerField(null=True, blank=True, default=10000)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -50,7 +53,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     def __str__(self):
-        return self.email
+        return f'{self.email} - {self.username}'

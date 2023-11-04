@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 
 ]
 
-INSTALLED_APPS.extend(['users', 'conversations'])  # local apps
+INSTALLED_APPS.extend(['users', 'prompts', 'conversations'])  # local apps
 INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
 
@@ -89,6 +89,10 @@ TEMPLATES = [
         },
     },
 ]
+
+# SECURITY WARNING: don't run with debug turned on in production!
+SITE_ID = int(getenv('SITE_ID', 1))
+SITE_URL = getenv('SITE_URL', 'http://localhost:8100')
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
@@ -164,7 +168,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # Domain names
 DOMAIN = getenv('DOMAIN')
 SITE_NAME = 'AI Revolution'
@@ -174,16 +177,37 @@ CORS_ALLOWED_ORIGINS = getenv(
     'http://127.0.0.1:8100,http://localhost:8100'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = ["*"]
+CORS_ALLOW_HEADERS = ["*"]
 
 
 # REST_FRAMEWORK Config
 REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',
+                                'rest_framework.filters.OrderingFilter'],
+    'PAGE_SIZE': int(getenv('DJANGO_PAGINATION_LIMIT', 18)),
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'users.authentication.CustomJWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {'anon': '100/second', 'user': '1000/second', 'subscribe': '60/minute'},
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 }
 
 # DJOSER Config
@@ -194,7 +218,10 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': getenv('REDIRECT_URLS').split(',')
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': getenv('REDIRECT_URLS').split(','),
+    'SERIALIZERS': {
+        'current_user': 'users.serializers.CustomUserSerializer',
+    }
 }
 
 # Sending emails

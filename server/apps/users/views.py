@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from djoser.social.views import ProviderAuthView
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -11,6 +13,12 @@ from rest_framework_simplejwt.views import (
 
 
 class CustomProviderAuthView(ProviderAuthView):
+    @swagger_auto_schema(tags=['Social Authentication'])
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return response
+
+    @swagger_auto_schema(tags=['Social Authentication'])
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
@@ -41,6 +49,7 @@ class CustomProviderAuthView(ProviderAuthView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    @swagger_auto_schema(tags=['Authentication'])
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
@@ -71,6 +80,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class CustomTokenRefreshView(TokenRefreshView):
+    @swagger_auto_schema(tags=['Authentication'])
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh')
 
@@ -96,6 +106,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 
 class CustomTokenVerifyView(TokenVerifyView):
+    @swagger_auto_schema(tags=['Authentication'])
     def post(self, request, *args, **kwargs):
         access_token = request.COOKIES.get('access')
 
@@ -106,6 +117,7 @@ class CustomTokenVerifyView(TokenVerifyView):
 
 
 class LogoutView(APIView):
+    @swagger_auto_schema(tags=['Authentication'])
     def post(self, request, *args, **kwargs):
         response = Response(status=status.HTTP_204_NO_CONTENT)
         response.delete_cookie('access')

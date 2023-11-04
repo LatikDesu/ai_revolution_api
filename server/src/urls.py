@@ -4,7 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import permissions, authentication
+from rest_framework import permissions
+from .custom_schema import CustomSchemaGenerator
 
 
 schema_view = get_schema_view(
@@ -16,23 +17,25 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="legas@yandex.ru"),
         license=openapi.License(name="BSD License"),
     ),
-    authentication_classes=(authentication.BasicAuthentication,),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    generator_class=CustomSchemaGenerator,
 )
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('djoser.urls')),
-    path('api/', include('users.urls')),
-    path('api/conversations/', include('conversations.urls')),
+
+    path('api/v1/', include('djoser.urls')),
+    path('api/v1/', include('users.urls')),
+    path('api/v1/', include('prompts.urls')),
+
+    # path('api/v1/conversations/', include('conversations.urls')),
 
     path('api-auth/', include('rest_framework.urls')),
+
     path('docs/', schema_view.with_ui('swagger',
          cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc',
-         cache_timeout=0), name='schema-redoc'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
