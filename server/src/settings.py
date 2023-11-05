@@ -56,7 +56,8 @@ INSTALLED_APPS = [
 
 ]
 
-INSTALLED_APPS.extend(['users', 'prompts', 'conversations'])  # local apps
+INSTALLED_APPS.extend(['users', 'prompts', 'notekeeper',
+                      'conversations'])  # local apps
 INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
 

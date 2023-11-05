@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/v1/', include('djoser.urls')),
     path('api/v1/', include('users.urls')),
     path('api/v1/', include('prompts.urls')),
+    path('api/v1/', include('notekeeper.urls')),
 
     # path('api/v1/conversations/', include('conversations.urls')),
 
