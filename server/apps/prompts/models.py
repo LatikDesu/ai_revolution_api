@@ -1,6 +1,7 @@
+import secrets
+
 from django.db import models
 from users.models import UserAccount
-import secrets
 
 
 def generate_secure_random_id():

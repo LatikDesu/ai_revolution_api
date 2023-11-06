@@ -1,17 +1,17 @@
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
 
+from conversations.models import Conversation, Message
+from conversations.serializers import (
+    ConversationSerializer,
+    MessageSerializer,
+)
 from conversations.tasks import send_gpt_request_task
-from conversations.utils import send_gpt_request
-
-from conversations.serializers import ConversationSerializer, MessageSerializer, FolderSerializer
-from conversations.models import Conversation, Message, Folder
-
 
 User = get_user_model()
 

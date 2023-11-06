@@ -11,18 +11,6 @@ PORT=${PORT:-8100}
 LOG_LEVEL=${LOG_LEVEL:-info}
 LOG_CONFIG=${LOG_CONFIG:-/app/server/logging.ini}
 
-# # Проверяем, были ли миграции выполнены
-# if [ ! -f /app/server/scripts/migrations_done ]; then
-#     /app/server/scripts/migrations.sh
-#     touch /app/server/scripts/migrations_done
-# fi
-
-# # Проверяем, был ли createsuperuser выполнен
-# if [ ! -f /app/server/scripts/createsuperuser_done ]; then
-#     /app/server/scripts/createsuperuser.sh
-#     touch /app/server/scripts/createsuperuser_done
-# fi
-
 /app/server/scripts/migrations.sh
 /app/server/scripts/createsuperuser.sh
 /app/server/scripts/loaddata.sh

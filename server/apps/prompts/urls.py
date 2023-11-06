@@ -1,8 +1,7 @@
 from django.urls import path
 
 from .views.SystemPrompts import SystemPromptList
-from .views.UserPrompts import UsersPromptsListCreate, UsersPromptsDetail
-
+from .views.UserPrompts import UsersPromptsDetail, UsersPromptsListCreate
 
 urlpatterns = [
     path('systemprompts/', SystemPromptList.as_view(), name='systemprompt-list'),

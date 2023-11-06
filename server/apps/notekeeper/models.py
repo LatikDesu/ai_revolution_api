@@ -1,17 +1,16 @@
-from django.db import models
-from django.utils.text import slugify
-from django.core.signing import Signer
-from django.utils.html import mark_safe
 import markdown
-from django.urls import reverse
-from unidecode import unidecode
-import markdown.extensions.fenced_code
 import markdown.extensions.codehilite
+import markdown.extensions.fenced_code
 import markdown.extensions.tables
 import markdown.extensions.toc
+from django.core.signing import Signer
+from django.db import models
+from django.urls import reverse
+from django.utils.html import mark_safe
 from django_cryptography.fields import encrypt
-
+from unidecode import unidecode
 from users.models import UserAccount
+
 from .utils import generate_secure_random_id, generate_unique_slug
 
 

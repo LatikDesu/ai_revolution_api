@@ -1,13 +1,13 @@
-from rest_framework import generics, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, status
 from rest_framework.exceptions import NotFound
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from notekeeper.serializers import NoteListSerializer, NoteSerializer
 from notekeeper.models import Note
+from notekeeper.serializers import NoteListSerializer, NoteSerializer
 
 
 class NoteList(generics.ListAPIView):

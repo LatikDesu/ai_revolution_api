@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import NoteList, NoteCreate, NoteDetail, CreateShareableLink, GetSharedNote
-
+from .views import CreateShareableLink, GetSharedNote, NoteCreate, NoteDetail, NoteList
 
 urlpatterns = [
     # List user note.

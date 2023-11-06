@@ -1,9 +1,9 @@
 from rest_framework import generics, status
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from prompts.serializers import UserPromptSerializer
 from prompts.models import UserPrompt
+from prompts.serializers import UserPromptSerializer
 
 
 class UsersPromptsListCreate(generics.ListCreateAPIView):

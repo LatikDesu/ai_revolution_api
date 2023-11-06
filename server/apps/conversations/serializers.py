@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
+from conversations.models import Conversation, Folder, Message
 from conversations.utils import time_since
-
-from conversations.models import Conversation, Message, Folder
 
 
 class MessageSerializer(serializers.ModelSerializer):

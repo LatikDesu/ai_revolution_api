@@ -1,23 +1,15 @@
 from django.urls import path
-# from conversations.views.ConversationFlow import ConversationFlowView
-# from conversations.views.Conversation import ConversationViewSet
-
-from conversations.views.Conversations import (
-    ConversationListCreate,
-    ConversationDetail,
-    ConversationDelete,
-    MessageList,
-    MessageCreate
-)
-
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-# router.register(r'', ConversationViewSet, basename='conversation')
+from conversations.views.Conversations import (
+    ConversationDelete,
+    ConversationListCreate,
+    MessageCreate,
+    MessageList,
+)
+
 
 urlpatterns = [
-    # path('gpt_request/', ConversationFlowView.as_view(), name='conversation flow'),
-
     # List and create conversations
     path('', ConversationListCreate.as_view(),
          name='conversation-list-create'),
@@ -39,5 +31,3 @@ urlpatterns = [
          MessageCreate.as_view(), name='message-create'),
 
 ]
-
-# urlpatterns += router.urls

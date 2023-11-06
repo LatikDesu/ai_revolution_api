@@ -1,11 +1,9 @@
+from os import getenv, path
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
-
-from django.contrib.auth import get_user_model
-from os import getenv, path
 import dotenv
-
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand, CommandError
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

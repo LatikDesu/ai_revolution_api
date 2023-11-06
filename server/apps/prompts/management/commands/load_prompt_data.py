@@ -1,8 +1,9 @@
+import json
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
+
 from prompts.models import SystemPrompt
-import json
 
 current_dir = Path(__file__).resolve().parent
 system_prompts_data_file = current_dir / 'system_prompts_data.json'

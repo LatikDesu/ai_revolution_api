@@ -1,13 +1,6 @@
 from django.db import models
-import secrets
-
 from users.models import UserAccount
-
-
-def generate_secure_random_id():
-    min_value = 10 ** 10  # Minimum value of the range (inclusive)
-    max_value = 10 ** 11 - 1  # Maximum value of the range (exclusive)
-    return secrets.randbelow(max_value - min_value) + min_value
+from .utils import generate_secure_random_id
 
 
 class Folder(models.Model):

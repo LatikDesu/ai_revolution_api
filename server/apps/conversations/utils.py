@@ -1,4 +1,6 @@
+import secrets
 from datetime import datetime, timezone
+
 import openai
 from django.conf import settings
 
@@ -33,19 +35,7 @@ def time_since(dt):
         return f"{int(seconds)} second{'s' if seconds > 1 else ''} ago"
 
 
-def send_gpt_request(message_list, system_prompt):
-
-    try:
-        res = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": f"{system_prompt}"},
-            ] + message_list,
-        )
-        return res["choices"][0]["message"]["content"]
-    except openai.error.APIError as e:
-        raise ValueError(f"OpenAI API returned an API Error: {e}")
-    except openai.error.APIConnectionError as e:
-        raise ValueError(f"Failed to connect to OpenAI API: {e}")
-    except openai.error.RateLimitError as e:
-        raise ValueError(f"OpenAI API request exceeded rate limit: {e}")
+def generate_secure_random_id():
+    min_value = 10 ** 10  # Minimum value of the range (inclusive)
+    max_value = 10 ** 11 - 1  # Maximum value of the range (exclusive)
+    return secrets.randbelow(max_value - min_value) + min_value
