@@ -1,29 +1,56 @@
 from rest_framework import serializers
-from conversations.models import ConversationFlow, Conversation
-from conversations.utils import send_request_to_gpt
+
+from conversations.utils import time_since
+
+from conversations.models import Conversation, Message, Folder
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    """
+    Message serializer.
+    """
+
+    class Meta:
+        model = Message
+        fields = ['id', 'conversation', 'content',
+                  'is_from_user', 'in_reply_to', 'created_at', ]
 
 
 class ConversationSerializer(serializers.ModelSerializer):
+    """
+    Conversation serializer.
+    """
+    messages = MessageSerializer(many=True, read_only=True)
+    created_at = serializers.SerializerMethodField()
+
     class Meta:
         model = Conversation
-        fields = ('id', 'user', 'timestamp', 'title')
-        read_only_fields = ('id', 'user', 'timestamp')
+        fields = ['id', 'title', 'favourite',
+                  'archive', 'created_at', 'messages', 'folder']
 
-    def create(self, validated_data):
-        return Conversation.objects.create(**validated_data)
+    def get_created_at(self, obj):
+        return time_since(obj.created_at)
 
 
-class ConversationFlowSerializer(serializers.ModelSerializer):
+class FolderConversationSerializer(serializers.ModelSerializer):
+    """
+    Folder conversation serializer.
+    """
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+
     class Meta:
-        model = ConversationFlow
-        fields = ("id", "conversation", "_input", "_output")
-        extra_kwargs = {
-            "_output": {"read_only": True}
-        }
+        model = Conversation
+        fields = ['id', 'title', 'created_at']
+        ordering = ['-created_at']
 
-    def create(self, validated_data):
-        ce = ConversationFlow(**validated_data)
-        _output = send_request_to_gpt(validated_data["_input"])
-        ce._output = _output
-        ce.save()
-        return ce
+
+class FolderSerializer(serializers.ModelSerializer):
+    """
+    Folder serializer.
+    """
+    conversation = ConversationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Folder
+        fields = ['id', 'title', 'conversation']
