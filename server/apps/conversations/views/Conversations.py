@@ -167,9 +167,10 @@ class ConversationRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     def retrieve(self, request, *args, **kwargs):
         conversation = self.get_object()
 
-        messages = Message.objects.filter(conversation=conversation)
+        messages = Message.objects.filter(
+            conversation=conversation).order_by('-created_at')[:10][::-1]
 
-        if messages.exists():
+        if messages:
             message_list = []
             for msg in messages:
                 if msg.is_from_user:
@@ -181,7 +182,7 @@ class ConversationRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
             task = generate_title_request.apply_async(args=(message_list,))
             my_title = task.get()
-            my_title = my_title[:30]
+            my_title = my_title[:64]
             conversation.title = my_title
             conversation.save()
             serializer = self.get_serializer(conversation)
