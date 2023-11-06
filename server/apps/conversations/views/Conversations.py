@@ -11,7 +11,7 @@ from conversations.serializers import (
     ConversationSerializer,
     MessageSerializer,
 )
-from conversations.tasks import send_gpt_request_task
+from conversations.tasks import send_gpt_request, generate_title_request
 
 User = get_user_model()
 
@@ -56,9 +56,9 @@ class ConversationDelete(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, pk):
+    def delete(self, request, conversation_id):
         conversation = get_object_or_404(
-            Conversation, id=pk, user=request.user)
+            Conversation, id=conversation_id, user=request.user)
         conversation.delete()
         return Response({"message": "conversation deleted"}, status=status.HTTP_200_OK)
 
@@ -107,7 +107,7 @@ class MessageCreate(generics.CreateAPIView):
         # response = send_gpt_request(message_list, system_prompt)
 
         # Call the Celery task to get a response from GPT-3
-        task = send_gpt_request_task.apply_async(
+        task = send_gpt_request.apply_async(
             args=(message_list, system_prompt))
         response = task.get()
         return [response, conversation.id, messages[0].id]
@@ -140,3 +140,51 @@ class MessageCreate(generics.CreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
         return Response({"response": assistant_response}, status=status.HTTP_200_OK, headers=headers)
+
+
+class DeleteMessagesInConversationView(generics.DestroyAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        conversation_id = self.kwargs['conversation_id']
+
+        Message.objects.filter(conversation_id=conversation_id).delete()
+
+        return Response({"message": "all messages deleted"}, status=status.HTTP_200_OK)
+
+
+class ConversationRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    """
+    Retrieve View to update or get the title
+    """
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
+    lookup_url_kwarg = 'conversation_id'
+
+    def retrieve(self, request, *args, **kwargs):
+        conversation = self.get_object()
+
+        messages = Message.objects.filter(conversation=conversation)
+
+        if messages.exists():
+            message_list = []
+            for msg in messages:
+                if msg.is_from_user:
+                    message_list.append(
+                        {"role": "user", "content": msg.content})
+                else:
+                    message_list.append(
+                        {"role": "assistant", "content": msg.content})
+
+            task = generate_title_request.apply_async(args=(message_list,))
+            my_title = task.get()
+            my_title = my_title[:30]
+            conversation.title = my_title
+            conversation.save()
+            serializer = self.get_serializer(conversation)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "No messages in conversation."}, status=status.HTTP_204_NO_CONTENT)

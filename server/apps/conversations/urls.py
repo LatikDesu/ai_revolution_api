@@ -6,6 +6,8 @@ from conversations.views.Conversations import (
     ConversationListCreate,
     MessageCreate,
     MessageList,
+    ConversationRetrieveUpdateView,
+    DeleteMessagesInConversationView
 )
 
 
@@ -19,7 +21,7 @@ urlpatterns = [
     #      name='conversation-detail'),
 
     # Delete a conversation
-    path('<int:pk>/delete/',
+    path('<int:conversation_id>/delete/',
          ConversationDelete.as_view(), name='conversation-delete'),
 
     # List messages in a conversation
@@ -29,5 +31,13 @@ urlpatterns = [
     # Create a message in a conversation
     path('<int:conversation_id>/messages/create/',
          MessageCreate.as_view(), name='message-create'),
+
+    # Clear messages in a conversation
+    path('<int:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
+         name='delete-messages-in-conversation'),
+
+    # Create or update title
+    path('<int:conversation_id>/title/',
+         ConversationRetrieveUpdateView.as_view(), name='conversation-title'),
 
 ]
