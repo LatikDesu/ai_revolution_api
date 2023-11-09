@@ -10,7 +10,7 @@ class CustomSchemaGenerator(OpenAPISchemaGenerator):
             'users/set_password/',
             'users/reset_email/',
             'users/reset_email_confirm/',
-            'users/resend_activation/',
+            'users/{id}/',
 
         ]
 

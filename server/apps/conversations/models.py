@@ -1,30 +1,37 @@
+import uuid
+
 from django.db import models
 from users.models import UserAccount
-from .utils import generate_secure_random_id
 
 
 class Folder(models.Model):
-    id = models.BigIntegerField(
-        primary_key=True, default=generate_secure_random_id, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, default="Новая папка")
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Conversation(models.Model):
     """
     Conversation model representing a chat conversation.
     """
-    id = models.BigIntegerField(
-        primary_key=True, default=generate_secure_random_id, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, default="Новый чат")
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     folder = models.ForeignKey(
-        'self', null=True, blank=True, on_delete=models.SET_NULL, related_name='folders')
+        Folder, null=True, blank=True, on_delete=models.SET_NULL, related_name='conversations')
 
-    favourite = models.BooleanField(default=False)
-    archive = models.BooleanField(default=False)
+    model = models.CharField(max_length=255, default="gpt-3.5-turbo-0613")
+    prompt = models.TextField(
+        null=True, blank=True, default="You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown. Respond in the language of the request")
+    tokenLimit = models.IntegerField(default=4000)
+    maxLength = models.IntegerField(default=12000)
+    temperature = models.FloatField(default=0.7)
 
     class Meta:
         ordering = ['created_at']
@@ -37,8 +44,8 @@ class Message(models.Model):
     """
     Message model representing a message within a conversation.
     """
-    id = models.BigIntegerField(
-        primary_key=True, default=generate_secure_random_id, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

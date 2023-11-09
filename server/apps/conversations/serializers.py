@@ -24,18 +24,27 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ['id', 'title', 'favourite',
-                  'archive', 'created_at', 'messages', 'folder']
+        fields = ['id', 'title', 'model', 'prompt', 'tokenLimit',
+                  'maxLength', 'temperature', 'created_at', 'messages', 'folder']
 
     def get_created_at(self, obj):
         return time_since(obj.created_at)
+
+
+class ConversationConfigSerializer(serializers.ModelSerializer):
+    """
+    Conversation config serializer.
+    """
+    class Meta:
+        model = Conversation
+        fields = ['id', 'title', 'model', 'prompt', 'tokenLimit',
+                  'maxLength', 'temperature', 'folder']
 
 
 class FolderConversationSerializer(serializers.ModelSerializer):
     """
     Folder conversation serializer.
     """
-    id = serializers.IntegerField()
     title = serializers.CharField()
 
     class Meta:
@@ -48,8 +57,8 @@ class FolderSerializer(serializers.ModelSerializer):
     """
     Folder serializer.
     """
-    conversation = ConversationSerializer(many=True, read_only=True)
+    conversations = FolderConversationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Folder
-        fields = ['id', 'title', 'conversation']
+        fields = ['id', 'title', 'conversations']

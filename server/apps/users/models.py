@@ -39,12 +39,13 @@ class UserAccountManager(BaseUserManager):
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=64, unique=True,)
-    first_name = models.CharField(max_length=64)
-    last_name = models.CharField(max_length=64)
+    username = models.CharField(max_length=64, unique=True)
+    first_name = models.CharField(max_length=64, blank=True)
+    last_name = models.CharField(max_length=64, blank=True)
     email = models.EmailField(unique=True, max_length=255)
 
-    tokens = models.IntegerField(null=True, blank=True, default=10000)
+    gpt3_tokens = models.IntegerField(null=True, blank=True, default=10000)
+    gpt4_tokens = models.IntegerField(null=True, blank=True, default=10000)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -53,7 +54,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return f'{self.email} - {self.username}'

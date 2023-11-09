@@ -5,8 +5,8 @@ from users.models import UserAccount
 
 
 def generate_secure_random_id():
-    min_value = 10 ** 10  # Minimum value of the range (inclusive)
-    max_value = 10 ** 11 - 1  # Maximum value of the range (exclusive)
+    min_value = 10 ** 10
+    max_value = 10 ** 11 - 1
     return secrets.randbelow(max_value - min_value) + min_value
 
 
@@ -16,7 +16,7 @@ class SystemPrompt(models.Model):
     """
     title = models.CharField(max_length=200)
     description = models.TextField()
-    prompt = models.TextField(null=True, blank=True)
+    prompt = models.TextField()
 
     def __str__(self):
         return f'{self.title}'
@@ -33,8 +33,9 @@ class UserPrompt(models.Model):
     id = models.BigIntegerField(
         primary_key=True, default=generate_secure_random_id, editable=False)
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200, default='Новая роль')
-    description = models.TextField(null=True, blank=True)
+    title = models.CharField(max_length=200, default='Custom role')
+    description = models.TextField(
+        null=True, blank=True, default='Custom role')
     prompt = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

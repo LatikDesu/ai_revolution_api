@@ -1,4 +1,3 @@
-import secrets
 from datetime import datetime, timezone
 
 import openai
@@ -33,9 +32,3 @@ def time_since(dt):
         return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
     else:
         return f"{int(seconds)} second{'s' if seconds > 1 else ''} ago"
-
-
-def generate_secure_random_id():
-    min_value = 10 ** 10  # Minimum value of the range (inclusive)
-    max_value = 10 ** 11 - 1  # Maximum value of the range (exclusive)
-    return secrets.randbelow(max_value - min_value) + min_value

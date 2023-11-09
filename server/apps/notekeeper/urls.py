@@ -10,9 +10,9 @@ urlpatterns = [
     path('create/', NoteCreate.as_view(), name='note-create'),
 
     # Retrieve, update, and delete a user note.
-    path('<int:pk>/', NoteDetail.as_view(), name='note-detail'),
+    path('<uuid:pk>/', NoteDetail.as_view(), name='note-detail'),
 
-    path('share/create-link/<int:note_id>/',
+    path('share/create-link/<uuid:note_id>/',
          CreateShareableLink.as_view(), name='create-shareable-link'),
     path('share/shared-note/<str:shareable_id>/',
          GetSharedNote.as_view(), name='get-shared-note'),

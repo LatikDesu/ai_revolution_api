@@ -1,3 +1,5 @@
+import uuid
+
 import markdown
 import markdown.extensions.codehilite
 import markdown.extensions.fenced_code
@@ -11,14 +13,13 @@ from django_cryptography.fields import encrypt
 from unidecode import unidecode
 from users.models import UserAccount
 
-from .utils import generate_secure_random_id, generate_unique_slug
+from .utils import generate_unique_slug
 
 
 class Note(models.Model):
-    id = models.BigIntegerField(
-        primary_key=True, default=generate_secure_random_id, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    note_title = models.CharField(max_length=200)
+    note_title = models.CharField(max_length=200, default='New Note')
     note_content = encrypt(models.TextField(null=True, blank=True))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

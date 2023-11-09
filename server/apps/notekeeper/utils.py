@@ -1,4 +1,5 @@
 import secrets
+import uuid
 
 from django.utils.text import slugify
 

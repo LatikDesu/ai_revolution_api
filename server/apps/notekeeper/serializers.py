@@ -18,7 +18,7 @@ class NoteSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'user', 'slug')
 
     def create(self, validated_data):
-        note_title = validated_data['note_title']
+        note_title = validated_data.get('note_title', 'New Note')
         slug = slugify(note_title)
 
         note = Note.objects.create(slug=slug, **validated_data)
@@ -26,10 +26,11 @@ class NoteSerializer(serializers.ModelSerializer):
         return note
 
     def update(self, instance, validated_data):
-        note_title = validated_data['note_title']
-        slug = slugify(note_title)
+        note_title = validated_data.get('note_title', None)
 
-        instance.slug = slug
+        if note_title:
+            slug = slugify(note_title)
+            instance.slug = slug
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

@@ -28,7 +28,8 @@ class CustomUserAdmin(UserAdmin):
                     "first_name",
                     "last_name",
                     "email",
-                    "tokens",
+                    "gpt3_tokens",
+                    "gpt4_tokens",
                 )
             },
         ),
