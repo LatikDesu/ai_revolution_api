@@ -13,9 +13,8 @@ from conversations.tasks import send_gpt_request
 
 User = get_user_model()
 
+
 # List messages in a conversation
-
-
 class MessageList(generics.ListAPIView):
     """
     List messages in a conversation.
