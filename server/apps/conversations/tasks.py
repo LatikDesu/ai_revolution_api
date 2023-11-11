@@ -31,7 +31,7 @@ def send_gpt_request(message_list, config):
     except Exception as e:
         logger.error(f"Failed to send request to GPT-3.5: {e}")
         return "Sorry, I'm having trouble understanding you."
-    return {"assistant_response": assistant_response, "gpt3_response": gpt3_response}
+    return assistant_response
 
 
 @shared_task
