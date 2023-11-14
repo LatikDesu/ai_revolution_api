@@ -13,7 +13,6 @@ from conversations.serializers import (
     ConversationConfigSerializer,
     ConversationSerializer,
 )
-from conversations.tasks import generate_title_request
 
 User = get_user_model()
 
@@ -60,7 +59,7 @@ class ConversationListCreate(generics.ListCreateAPIView):
         responses={201: ConversationSerializer, },
         operation_summary='Создание нового чата аутентифицированного пользователя.',
         operation_description='''
-        ### Создает нооовый чат для аутентифицированного пользователя.
+        ### Создает новый чат для аутентифицированного пользователя.
         
         Доступные параметры:
         - `title`: Заголовок чата (`default` = "Новый чат"), \n
@@ -153,38 +152,3 @@ class ConversationDelete(APIView):
             Conversation, id=conversation_id, user=request.user)
         conversation.delete()
         return Response({"message": "conversation deleted"}, status=status.HTTP_200_OK)
-
-
-class ConversationRetrieveUpdateView(generics.RetrieveUpdateAPIView):
-    """
-    Retrieve View to update or get the title
-    """
-    queryset = Conversation.objects.all()
-    serializer_class = ConversationSerializer
-    lookup_url_kwarg = 'conversation_id'
-
-    def retrieve(self, request, *args, **kwargs):
-        conversation = self.get_object()
-
-        messages = Message.objects.filter(
-            conversation=conversation).order_by('-created_at')[:10][::-1]
-
-        if messages:
-            message_list = []
-            for msg in messages:
-                if msg.is_from_user:
-                    message_list.append(
-                        {"role": "user", "content": msg.content})
-                else:
-                    message_list.append(
-                        {"role": "assistant", "content": msg.content})
-
-            task = generate_title_request.apply_async(args=(message_list,))
-            my_title = task.get()
-            my_title = my_title[:64]
-            conversation.title = my_title
-            conversation.save()
-            serializer = self.get_serializer(conversation)
-            return Response(serializer.data)
-        else:
-            return Response({"message": "No messages in conversation."}, status=status.HTTP_204_NO_CONTENT)

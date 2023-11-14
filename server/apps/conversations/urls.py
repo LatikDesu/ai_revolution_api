@@ -4,7 +4,6 @@ from conversations.views.Conversations import (
     ConversationDelete,
     ConversationDetail,
     ConversationListCreate,
-    ConversationRetrieveUpdateView,
 )
 from conversations.views.Folders import (
     FolderCreateView,
@@ -42,10 +41,6 @@ urlpatterns = [
     # Clear messages in a conversation
     path('<uuid:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
          name='delete-messages-in-conversation'),
-
-    # Create or update title
-    path('<uuid:conversation_id>/title/',
-         ConversationRetrieveUpdateView.as_view(), name='conversation-title'),
 
     # List user folders
     path('folders/list/', FolderListView.as_view(), name='folder-list'),

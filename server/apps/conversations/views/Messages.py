@@ -16,7 +16,6 @@ from conversations.tasks import send_gpt_request
 User = get_user_model()
 
 
-# List messages in a conversation
 class MessageList(generics.ListAPIView):
     """
     List messages in a conversation.
@@ -29,8 +28,34 @@ class MessageList(generics.ListAPIView):
             Conversation, id=self.kwargs['conversation_id'], user=self.request.user)
         return Message.objects.filter(conversation=conversation).select_related('conversation')
 
+    @swagger_auto_schema(
+        tags=['Conversation messages'],
+        responses={200: MessageSerializer(many=True)},
+        operation_summary='Список сообщений в беседе.',
+        operation_description="""
+        ### Получает список всех сообщений из беседы аутентифицированного пользователя.
+        
+        Значения:
+        - `id`: id сообщения в формате uuid, \n
+        - `conversation`: id чата в формате uuid,
+        - `content`: текст запроса / ответа,
+        - `is_from_user`: флаг, определяющий, является ли это сообщение от пользователя,
+        - `in_reply_to`: id сообщения, в ответ на которое было данное сообщение,
+        - `created_at`: время создания сообщения в формате ISO 8601,
+        """,
+        manual_parameters=[
+            openapi.Parameter(
+                'conversation_id',
+                openapi.IN_PATH,
+                description='ID чата из которого получаем сообщения.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-# Create a message in a conversation
+
 class MessageCreate(generics.CreateAPIView):
     """
     Create a message in a conversation.
@@ -63,9 +88,11 @@ class MessageCreate(generics.CreateAPIView):
                   for field in conversation_fields}
 
         # Call the Celery task to get a response from GPT-3
-        task = send_gpt_request.apply_async(
-            args=(message_list, config))
-        response = task.get()
+        # task = send_gpt_request.apply_async(
+        #     args=(message_list, config))
+        # response = task.get()
+
+        response = send_gpt_request(message_list, config)
 
         return [response, conversation.id, messages[0].id]
 
@@ -97,6 +124,29 @@ class MessageCreate(generics.CreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
         return Response({"response": assistant_response}, status=status.HTTP_200_OK, headers=headers)
+
+    @swagger_auto_schema(
+        tags=['Conversation messages'],
+        request_body=MessageSerializer,
+        responses={201: MessageSerializer, },
+        operation_summary='Отправить запрос к ChatGPT.',
+        operation_description='''
+        ### Создает сообщение от имени пользователя к ChatGPT.
+        
+        Доступные параметры:
+        - `content`: текст запроса, \n
+        ''',
+        manual_parameters=[
+            openapi.Parameter(
+                'conversation_id',
+                openapi.IN_PATH,
+                description='ID чата в котором работаем.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+    )
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
 class DeleteMessagesInConversationView(generics.DestroyAPIView):

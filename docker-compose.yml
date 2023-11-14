@@ -23,26 +23,6 @@ services:
       - 8100:8100
     env_file:
       - ./server/.env
-  worker:
-    container_name: celery
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: docker/server/Dockerfile
-    entrypoint: /app/server/scripts/worker-entrypoint.sh
-    volumes:
-      - static:/app/server/static
-    env_file:
-      - ./server/.env
-    depends_on:
-      - api
-      - redis
-  redis:
-    container_name: redis
-    restart: unless-stopped
-    image: redis:7.0.5-alpine
-    expose:
-      - 6379
 
 volumes:
   static:

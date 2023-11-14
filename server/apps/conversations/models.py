@@ -26,7 +26,7 @@ class Conversation(models.Model):
     folder = models.ForeignKey(
         Folder, null=True, blank=True, on_delete=models.SET_NULL, related_name='conversations')
 
-    model = models.CharField(max_length=255, default="gpt-3.5-turbo-0613")
+    model = models.CharField(max_length=255, default="gpt-3.5-turbo-16k")
     prompt = models.TextField(
         null=True, blank=True, default="You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown. Respond in the language of the request")
     tokenLimit = models.IntegerField(default=1000)
