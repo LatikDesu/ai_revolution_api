@@ -13,8 +13,8 @@ class SystemPromptSerializer(serializers.ModelSerializer):
 class UserPromptSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPrompt
-        fields = ('id', 'user', 'title', 'description', 'prompt')
-        read_only_fields = ('id', 'user')
+        fields = ('id', 'title', 'description', 'prompt')
+        read_only_fields = ('id',)
 
     def create(self, validated_data):
         return UserPrompt.objects.create(**validated_data)

@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth.models import AnonymousUser
+from drf_yasg import openapi
 
 from prompts.models import UserPrompt
 from prompts.serializers import UserPromptSerializer
@@ -25,7 +26,15 @@ class UsersPromptsListCreate(generics.ListCreateAPIView):
         tags=['User prompts'],
         responses={200: UserPromptSerializer(many=True)},
         operation_summary='Список всех ролей аутентифицированного пользователя.',
-        operation_description='Получает все роли, созданные аутентифицированным пользователем.'
+        operation_description='''
+        ### Получает все роли, созданные аутентифицированным пользователем.
+        
+        Значения:
+        - `id`: id роли, \n
+        - `title`: Название роли,
+        - `description`: Краткое описание роли,
+        - `prompt`: Текст системного промта для запроса к chatGPT 
+        '''
     )
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -36,11 +45,12 @@ class UsersPromptsListCreate(generics.ListCreateAPIView):
         responses={201: UserPromptSerializer, },
         operation_summary='Создание новой роли аутентифицированного пользователя.',
         operation_description='''
-        Создает новую роль для аутентифицированного пользователя.
+        ### Создает новую роль для аутентифицированного пользователя.
         
-        'title' - Название роли (default = "Custom role")
-        'description' - Краткое описание роли (default = "Custom role") 
-        'prompt' - Текст системного промта для запроса к chatGPT (default = null)
+        Доступные параметры:
+        - `title` - Название роли (`default` = "Custom role") \n
+        - `description` - Краткое описание роли (`default` = "Custom role") 
+        - `prompt` - Текст системного промта для запроса к chatGPT (`default` = null)
         '''
     )
     def post(self, request, *args, **kwargs):
@@ -69,7 +79,23 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
                    403: 'Forbidden',
                    404: 'Not Found'},
         operation_summary='Получение информации о роли аутентифицированного пользователя.',
-        operation_description='Получение информации о конкретной роли аутентифицированного пользователя.'
+        operation_description='''
+        ### Получение информации о конкретной роли аутентифицированного пользователя.
+        
+        Значения:
+        - `id`: id роли, \n
+        - `title`: Название роли,
+        - `description`: Краткое описание роли,
+        - `prompt`: Текст системного промта для запроса к chatGPT 
+        ''',
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID роли, которую нужно получить.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -83,12 +109,21 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
                    404: 'Not Found'},
         operation_summary='Обновление данных роли аутентифицированного пользователя.',
         operation_description='''
-        Обновление данных в конкретной роли для аутентифицированного пользователя.
+        ### Обновление данных в конкретной роли для аутентифицированного пользователя.
         
-        'title' - Название роли (default = "Custom role")
-        'description' - Краткое описание роли (default = "Custom role") 
-        'prompt' - Текст системного промта для запроса к chatGPT (default = null)
-        '''
+        Доступные параметры:
+        - `title` - Название роли (`default` = "Custom role") \n
+        - `description` - Краткое описание роли (`default` = "Custom role") 
+        - `prompt` - Текст системного промта для запроса к chatGPT (`default` = null)
+        ''',
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID роли, которую нужно изменить.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
@@ -102,10 +137,18 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
     @swagger_auto_schema(
         tags=['User prompts'],
         operation_summary='Удаление роли аутентифицированного пользователя.',
-        operation_description='Удаление конкретной роли аутентифицированного пользователя.',
+        operation_description='### Удаление конкретной роли аутентифицированного пользователя.',
         responses={204: 'No Content',
                    403: 'Forbidden',
                    404: 'Not Found'},
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID роли, которую нужно удалить.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     def delete(self, request, *args, **kwargs):
         prompt = self.get_object()

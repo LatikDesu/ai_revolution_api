@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.contrib.auth.models import AnonymousUser
 
 from notekeeper.models import Note
@@ -26,9 +27,17 @@ class NoteList(generics.ListAPIView):
         return Note.objects.filter(user=user).order_by('created_at')
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         responses={200: NoteListSerializer(many=True)},
         operation_summary='Список всех заметок аутентифицированного пользователя.',
-        operation_description='Получает все заметки, созданные аутентифицированным пользователем.'
+        operation_description='''
+        ### Получает все заметки, созданные аутентифицированным пользователем.
+        
+        Значения:
+        - `note_title`: заголовок заметки, \n
+        - `note_content`: содержание заметки в формате markdown,
+        - `slug`: уникальное имя заметки, формируется автоматически из заголовка
+        '''
     )
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -48,14 +57,16 @@ class NoteCreate(generics.CreateAPIView):
         return Note.objects.filter(user=user)
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         request_body=NoteSerializer,
         responses={201: NoteSerializer, },
         operation_summary='Создание новой заметки аутентифицированного пользователя.',
         operation_description='''
-        Создает заметку аутентифицированного пользователя.
+        ### Создает заметку аутентифицированного пользователя.
         
-        'note_title' - Заголовок заметки (default = "New Note")
-        'note_content' - Содержание заметки (default = null) 
+        Доступные параметры:
+        - `note_title` - Заголовок заметки (`default` = "New Note") \n
+        - `note_content` - Содержание заметки (`default` = null) 
         '''
     )
     def post(self, request, *args, **kwargs):
@@ -79,24 +90,35 @@ class NoteDetail(generics.RetrieveUpdateDestroyAPIView):
         return Note.objects.filter(user=user)
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         responses={200: NoteSerializer,
                    403: 'Forbidden',
                    404: 'Not Found'},
         operation_summary='Получение информации о заметке аутентифицированного пользователя.',
         operation_description='''
-        Получение информации о конкретной заметке аутентифицированного пользователя.
+        ### Получение информации о конкретной заметке аутентифицированного пользователя.
         
-        "id": id заметки в формате uuid,
-        "user": id пользователя-владельца,
-        "note_title": заголовок заметки,
-        "note_content": содержание заметки в формате markdown,
-        "slug": уникальное имя заметки, формируется автоматически из заголовка
-        '''
+        Значения:
+        - `id`: id заметки в формате uuid, \n
+        - `user`: id пользователя-владельца,
+        - `note_title`: заголовок заметки,
+        - `note_content`: содержание заметки в формате markdown,
+        - `slug`: уникальное имя заметки, формируется автоматически из заголовка
+        ''',
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID заметки, о которой нужны данные.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         request_body=NoteSerializer,
         responses={200: NoteSerializer,
                    400: 'Bad Request',
@@ -104,12 +126,21 @@ class NoteDetail(generics.RetrieveUpdateDestroyAPIView):
                    404: 'Not Found'},
         operation_summary='Обновление данных в заметке аутентифицированного пользователя.',
         operation_description='''
-        Обновление данных в конкретной заметке для аутентифицированного пользователя.
+        ### Обновление данных в конкретной заметке для аутентифицированного пользователя.
         
-        "note_title": заголовок заметки,
-        "note_content": содержание заметки в формате markdown,
-        "slug": уникальное имя заметки, формируется автоматически из заголовка
-        '''
+        Доступные параметры:
+        - `note_title`: заголовок заметки, \n
+        - `note_content`: содержание заметки в формате markdown,
+        - `slug`: уникальное имя заметки, формируется автоматически из заголовка
+        ''',
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID заметки, данные которой нужно изменить.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
     )
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
@@ -121,8 +152,17 @@ class NoteDetail(generics.RetrieveUpdateDestroyAPIView):
         return super().put(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         operation_summary='Удаление заметки аутентифицированного пользователя.',
-        operation_description='Удаление конкретной заметки аутентифицированного пользователя.',
+        operation_description='### Удаление конкретной заметки аутентифицированного пользователя.',
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description='ID заметки, которую нужно удалить.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
         responses={204: 'No Content',
                    403: 'Forbidden',
                    404: 'Not Found'},
@@ -141,8 +181,17 @@ class CreateShareableLink(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
+        tags=['Note keeper'],
         operation_summary='Создание ссылки на заметку.',
-        operation_description='Создание ссылки на конкретную заметку аутентифицированного пользователя с шифрованием данных',
+        operation_description='### Создание ссылки на конкретную заметку аутентифицированного пользователя с шифрованием данных',
+        manual_parameters=[
+            openapi.Parameter(
+                'note_id',
+                openapi.IN_PATH,
+                description='ID заметки, для которой нужна ссылка.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
         responses={201: 'shareable_link',
                    403: 'Forbidden',
                    404: 'Not Found'},
@@ -161,8 +210,17 @@ class GetSharedNote(APIView):
     Get the shared note from a shareable link.
     """
     @swagger_auto_schema(
+        tags=['Note keeper'],
         operation_summary='Расшифровка ссылки на заметку.',
-        operation_description='Расшифровывает конкретную заметку аутентифицированного пользователя из ссылки',
+        operation_description='### Расшифровывает конкретную заметку аутентифицированного пользователя из ссылки',
+        manual_parameters=[
+            openapi.Parameter(
+                'shareable_id',
+                openapi.IN_PATH,
+                description='ID ссылки из которой нужно получить заметку',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
         responses={200: NoteSerializer,
                    403: 'Forbidden',
                    404: 'Not Found'},

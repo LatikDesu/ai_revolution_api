@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from conversations.models import Conversation, Message
 from conversations.serializers import (
@@ -98,14 +100,29 @@ class MessageCreate(generics.CreateAPIView):
 
 
 class DeleteMessagesInConversationView(generics.DestroyAPIView):
+
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
 
     permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
+    @swagger_auto_schema(
+        tags=['Conversations'],
+        operation_summary='Очистка сообщений из чата.',
+        operation_description='### Удаление всех сообщений из чата аутентифицированного пользователя.',
+        manual_parameters=[
+            openapi.Parameter(
+                'conversation_id',
+                openapi.IN_PATH,
+                description='ID чата, из которого нужно удалить сообщения.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: 'all messages deleted',
+                   403: 'Forbidden',
+                   404: 'Not Found'},
+    )
+    def delete(self, request, *args, **kwargs):
         conversation_id = self.kwargs['conversation_id']
-
         Message.objects.filter(conversation_id=conversation_id).delete()
-
         return Response({"message": "all messages deleted"}, status=status.HTTP_200_OK)

@@ -15,7 +15,15 @@ class SystemPromptList(generics.ListAPIView):
         tags=['System prompts'],
         responses={200: SystemPromptSerializer(many=True), },
         operation_summary='Список системных ролей.',
-        operation_description='Получает все системные роли.'
+        operation_description='''
+        ### Получает все системные роли. Загружаются из файла/вносятся через административную панель.
+        
+        Значения:
+        - `id`: id роли, \n
+        - `title` - Название роли
+        - `description` - Краткое описание роли
+        - `prompt` - Текст системного промта для запроса к chatGPT
+        '''
     )
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
