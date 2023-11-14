@@ -13,6 +13,8 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ['id', 'conversation', 'content',
                   'is_from_user', 'in_reply_to', 'created_at', ]
+        read_only_fields = ('id', 'conversation',
+                            'is_from_user', 'in_reply_to', 'created_at', )
 
 
 class ConversationSerializer(serializers.ModelSerializer):

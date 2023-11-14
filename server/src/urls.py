@@ -28,11 +28,8 @@ urlpatterns = [
 
     path('api/v1/', include('djoser.urls')),
     path('api/v1/users/', include('users.urls')),
-
     path('api/v1/prompts/', include('prompts.urls')),
-
     path('api/v1/notes/', include('notekeeper.urls')),
-
     path('api/v1/conversations/', include('conversations.urls')),
 
     path('api-auth/', include('rest_framework.urls')),

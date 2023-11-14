@@ -41,9 +41,9 @@ class MessageCreate(generics.CreateAPIView):
             Conversation, id=self.kwargs['conversation_id'], user=self.request.user)
         serializer.save(conversation=conversation, is_from_user=True)
 
-        # Retrieve the last 10 messages from the conversation
+        # Retrieve the last 5 messages from the conversation
         messages = Message.objects.filter(
-            conversation=conversation).order_by('-created_at')[:10][::-1]
+            conversation=conversation).order_by('-created_at')[:5][::-1]
 
         # Build the list of dictionaries containing the message data
         message_list = []

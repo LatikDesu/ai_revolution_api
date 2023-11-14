@@ -1,6 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.contrib.auth.models import AnonymousUser
 
 from conversations.models import Conversation, Folder
 from conversations.serializers import FolderConversationSerializer, FolderSerializer
@@ -47,6 +48,9 @@ class FolderDeleteView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
+        if isinstance(user, AnonymousUser):
+            return Folder.objects.none()
         return Folder.objects.filter(user=self.request.user)
 
     def destroy(self, request, *args, **kwargs):

@@ -1,4 +1,5 @@
 import openai
+import json
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.conf import settings
@@ -17,8 +18,8 @@ def send_gpt_request(message_list, config):
             temperature=config['temperature'],
             # Ограничение на количество токенов в ответе
             max_tokens=config['tokenLimit'],
-            # total_tokens=config['maxLength'],
             # Ограничение на размер беседы
+            # total_tokens=config['maxLength'],
             messages=[
                 {"role": "system",
                  "content": f"{config['prompt']}"},
@@ -27,6 +28,8 @@ def send_gpt_request(message_list, config):
 
         assistant_response = gpt3_response["choices"][0]["message"]["content"].strip(
         )
+
+        logger.info(f"GPT-3 response: {gpt3_response['usage']}")
 
     except Exception as e:
         logger.error(f"Failed to send request to GPT-3.5: {e}")
