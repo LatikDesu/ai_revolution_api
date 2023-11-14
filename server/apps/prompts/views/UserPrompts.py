@@ -15,21 +15,23 @@ class UsersPromptsListCreate(generics.ListCreateAPIView):
     serializer_class = UserPromptSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if isinstance(user, AnonymousUser):
+            return Response([])
+        return UserPrompt.objects.filter(user=user).order_by('created_at')
+
     @swagger_auto_schema(
+        tags=['User prompts'],
         responses={200: UserPromptSerializer(many=True)},
         operation_summary='Список всех ролей аутентифицированного пользователя.',
         operation_description='Получает все роли, созданные аутентифицированным пользователем.'
     )
     def get(self, request, *args, **kwargs):
-        user = self.request.user
-        if isinstance(user, AnonymousUser):
-            return UserPrompt.objects.none()
-        user_prompts = UserPrompt.objects.filter(
-            user=user).order_by('created_at')
-        serializer = self.get_serializer(user_prompts, many=True)
-        return Response(serializer.data)
+        return self.list(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        tags=['User prompts'],
         request_body=UserPromptSerializer,
         responses={201: UserPromptSerializer, },
         operation_summary='Создание новой роли аутентифицированного пользователя.',
@@ -58,10 +60,11 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         if isinstance(user, AnonymousUser):
-            return UserPrompt.objects.none()
+            return Response([])
         return UserPrompt.objects.filter(user=user)
 
     @swagger_auto_schema(
+        tags=['User prompts'],
         responses={200: UserPromptSerializer,
                    403: 'Forbidden',
                    404: 'Not Found'},
@@ -72,14 +75,15 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
         return super().get(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        tags=['User prompts'],
         request_body=UserPromptSerializer,
         responses={200: UserPromptSerializer,
                    400: 'Bad Request',
                    403: 'Forbidden',
                    404: 'Not Found'},
-        operation_summary='Обновление информации о роли аутентифицированного пользователя.',
+        operation_summary='Обновление данных роли аутентифицированного пользователя.',
         operation_description='''
-        Обновление информации о конкретной роли для аутентифицированного пользователя.
+        Обновление данных в конкретной роли для аутентифицированного пользователя.
         
         'title' - Название роли (default = "Custom role")
         'description' - Краткое описание роли (default = "Custom role") 
@@ -96,6 +100,7 @@ class UsersPromptsDetail(generics.RetrieveUpdateDestroyAPIView):
         return super().put(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        tags=['User prompts'],
         operation_summary='Удаление роли аутентифицированного пользователя.',
         operation_description='Удаление конкретной роли аутентифицированного пользователя.',
         responses={204: 'No Content',

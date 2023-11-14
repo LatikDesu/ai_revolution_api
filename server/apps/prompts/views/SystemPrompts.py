@@ -7,13 +7,13 @@ from prompts.serializers import SystemPromptSerializer
 
 
 class SystemPromptList(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
 
     queryset = SystemPrompt.objects.all()
     serializer_class = SystemPromptSerializer
 
     @swagger_auto_schema(
-        responses={200: SystemPromptSerializer(many=True)},
+        tags=['System prompts'],
+        responses={200: SystemPromptSerializer(many=True), },
         operation_summary='Список системных ролей.',
         operation_description='Получает все системные роли.'
     )

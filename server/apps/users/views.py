@@ -48,7 +48,11 @@ class CustomProviderAuthView(ProviderAuthView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    @swagger_auto_schema(tags=['Authentication'])
+    @swagger_auto_schema(
+        tags=['Authentication'],
+        operation_summary='Авторизация. Получение токена авторизации.',
+        operation_description='Создание токенов авторизации. Создаются 2 токена access и refresh, записываются в cookie для дальнейшей работы пользователя.'
+    )
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
 
@@ -79,7 +83,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class CustomTokenRefreshView(TokenRefreshView):
-    @swagger_auto_schema(tags=['Authentication'])
+    @swagger_auto_schema(
+        tags=['Authentication'],
+        operation_summary='Обновление токена авторизации.',
+        operation_description='Берет из cookie refresh токен, в ответе возвращает обновленный access токен.')
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh')
 
@@ -105,7 +112,10 @@ class CustomTokenRefreshView(TokenRefreshView):
 
 
 class CustomTokenVerifyView(TokenVerifyView):
-    @swagger_auto_schema(tags=['Authentication'])
+    @swagger_auto_schema(
+        tags=['Authentication'],
+        operation_summary='Проверка токена авторизации.',
+        operation_description='Проверяет что пользователь то за кого себя выдает)')
     def post(self, request, *args, **kwargs):
         access_token = request.COOKIES.get('access')
 
@@ -116,7 +126,9 @@ class CustomTokenVerifyView(TokenVerifyView):
 
 
 class LogoutView(APIView):
-    @swagger_auto_schema(tags=['Authentication'])
+    @swagger_auto_schema(tags=['Authentication'],
+                         operation_summary='Выход из аккаунта.',
+                         operation_description='Удаляет cookie access и refresh')
     def post(self, request, *args, **kwargs):
         response = Response(status=status.HTTP_204_NO_CONTENT)
         response.delete_cookie('access')
