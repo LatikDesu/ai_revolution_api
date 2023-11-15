@@ -126,6 +126,7 @@ class CustomTokenVerifyView(TokenVerifyView):
 
 
 class LogoutView(APIView):
+
     @swagger_auto_schema(tags=['Authentication'],
                          operation_summary='Выход из аккаунта.',
                          operation_description='### Удаляет cookie access и refresh')
