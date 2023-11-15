@@ -1,6 +1,7 @@
 import sys
 from os import getenv, path
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 import dotenv
 from django.core.management.utils import get_random_secret_key
@@ -29,8 +30,7 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv('DJANGO_DEBUG', False) == 'True'
 
-ALLOWED_HOSTS = getenv('DJANGO_ALLOWED_HOSTS',
-                       '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -165,8 +165,6 @@ CORS_ALLOWED_ORIGINS = getenv(
     'http://127.0.0.1:8100,http://localhost:8100'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_METHODS = ["*"]
-CORS_ALLOW_HEADERS = ["*"]
 
 
 # REST_FRAMEWORK Config
@@ -267,3 +265,32 @@ SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 SOCIAL_AUTH_GITHUB_KEY = getenv('GH_AUTH_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = getenv('GH_AUTH_SECRET_KEY')
 SOCIAL_AUTH_GITHUB_SCOPE = ['email']
+
+
+CSRF_COOKIE_SECURE = bool(getenv('CSRF_COOKIE_SECURE', True))
+SESSION_COOKIE_SECURE = bool(getenv('SESSION_COOKIE_SECURE', True))
+
+# # False since we will grab it via universal-cookies
+CSRF_COOKIE_HTTPONLY = bool(getenv('CSRF_COOKIE_HTTPONLY', False))
+
+SESSION_COOKIE_HTTPONLY = bool(getenv('SESSION_COOKIE_HTTPONLY', True))
+SESSION_COOKIE_SAMESITE = getenv('SESSION_COOKIE_SAMESITE', "None")
+CSRF_COOKIE_SAMESITE = getenv('CSRF_COOKIE_SAMESITE', "None")
+CORS_ALLOW_CREDENTIALS = bool(getenv('CORS_ALLOW_CREDENTIALS', True))
+CORS_ORIGIN_ALLOW_ALL = bool(getenv('CORS_ORIGIN_ALLOW_ALL', True))
+CSRF_COOKIE_NAME = getenv('CSRF_COOKIE_NAME', "csrftoken")
+CSRF_TRUSTED_ORIGIN = getenv('CSRF_TRUSTED_ORIGINS', "localhost:3000")
+CSRF_TRUSTED_ORIGIN = CSRF_TRUSTED_ORIGIN.split(',')
+CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGIN
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'X-CSRFToken',
+]
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+
+X_FRAME_OPTIONS = getenv('X_FRAME_OPTIONS', 'DENY')
+SECURE_BROWSER_XSS_FILTER = bool(getenv('SECURE_BROWSER_XSS_FILTER', True))
+
+# Headers
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
