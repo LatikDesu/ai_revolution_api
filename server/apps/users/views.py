@@ -132,7 +132,11 @@ class LogoutView(APIView):
                          operation_description='### Удаляет cookie access и refresh')
     def post(self, request, *args, **kwargs):
         response = Response(status=status.HTTP_204_NO_CONTENT)
-        response.delete_cookie('access')
-        response.delete_cookie('refresh')
+        response.delete_cookie('access',
+                               path=settings.AUTH_COOKIE_PATH,
+                               samesite=settings.AUTH_COOKIE_SAMESITE)
+        response.delete_cookie('refresh',
+                               path=settings.AUTH_COOKIE_PATH,
+                               samesite=settings.AUTH_COOKIE_SAMESITE)
 
         return response
