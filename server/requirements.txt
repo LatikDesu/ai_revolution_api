@@ -50,3 +50,4 @@ Unidecode
 itsdangerous 
 celery
 celery[redis]
+g4f

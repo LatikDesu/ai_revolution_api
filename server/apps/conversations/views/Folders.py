@@ -32,6 +32,17 @@ class FolderListView(generics.ListAPIView):
                 conversations, many=True)
             folder_data['conversations'] = conversation_serializer.data
 
+        conversations_without_folders = Conversation.objects.filter(
+            folder__isnull=True, user=self.request.user).order_by('created_at')
+
+        default_folder = {
+            'id': None,
+            'title': None,
+            'conversations': FolderConversationSerializer(conversations_without_folders, many=True).data
+        }
+
+        data.append(default_folder)
+
         return Response(data)
 
     @swagger_auto_schema(

@@ -17,6 +17,7 @@ from conversations.views.Messages import (
     MessageList,
 )
 
+
 urlpatterns = [
     # Retrieve, update conversation
     path('<uuid:conversation_id>/config/', ConversationDetail.as_view(),
