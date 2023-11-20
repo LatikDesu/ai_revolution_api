@@ -63,10 +63,12 @@ class MessageCreate(generics.CreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
+    def perform_create(self, request, serializer):
         conversation = get_object_or_404(
             Conversation, id=self.kwargs['conversation_id'], user=self.request.user)
-        serializer.save(conversation=conversation, is_from_user=True)
+
+        if not request.data.get('regenerate'):
+            serializer.save(conversation=conversation, is_from_user=True)
 
         # Retrieve the last 5 messages from the conversation
         messages = Message.objects.filter(
@@ -87,11 +89,6 @@ class MessageCreate(generics.CreateAPIView):
         config = {field: getattr(conversation, field)
                   for field in conversation_fields}
 
-        # Call the Celery task to get a response from GPT-3
-        # task = send_gpt_request.apply_async(
-        #     args=(message_list, config))
-        # response = task.get()
-
         response = send_gpt_request(message_list, config)
 
         return [response, conversation.id, messages[0].id]
@@ -99,28 +96,30 @@ class MessageCreate(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        response_list = self.perform_create(serializer)
+        response_list = self.perform_create(
+            request=request, serializer=serializer)
         assistant_response = response_list[0]
         conversation_id = response_list[1]
         last_user_message_id = response_list[2]
 
-        try:
-            # Store GPT response as a message
-            message = Message(
-                conversation_id=conversation_id,
-                content=assistant_response,
-                is_from_user=False,
-                in_reply_to_id=last_user_message_id
-            )
-            message.save()
+        if assistant_response != "Sorry, I'm having trouble understanding you.":
+            try:
+                # Store GPT response as a message
+                message = Message(
+                    conversation_id=conversation_id,
+                    content=assistant_response,
+                    is_from_user=False,
+                    in_reply_to_id=last_user_message_id
+                )
+                message.save()
 
-        except ObjectDoesNotExist:
-            error = f"Conversation with id {conversation_id} does not exist"
-            Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            error_mgs = str(e)
-            error = f"Failed to save GPT-3 response as a message: {error_mgs}"
-            Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+            except ObjectDoesNotExist:
+                error = f"Conversation with id {conversation_id} does not exist"
+                Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                error_mgs = str(e)
+                error = f"Failed to save GPT-3 response as a message: {error_mgs}"
+                Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
         headers = self.get_success_headers(serializer.data)
         return Response({"response": assistant_response}, status=status.HTTP_200_OK, headers=headers)
@@ -135,6 +134,7 @@ class MessageCreate(generics.CreateAPIView):
         
         Доступные параметры:
         - `content`: текст запроса, \n
+        - `regenerate`: флаг, определяющий нужно ли пересоздать сообщение 
         ''',
         manual_parameters=[
             openapi.Parameter(
