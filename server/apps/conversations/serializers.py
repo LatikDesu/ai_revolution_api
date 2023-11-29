@@ -27,10 +27,12 @@ class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversation
         fields = ['id', 'title', 'model', 'prompt', 'tokenLimit',
-                  'maxLength', 'temperature', 'created_at', 'messages', 'folder']
+                  'maxLength', 'temperature', 'created_at', 'updated_at', 'messages', 'folder']
 
     def get_created_at(self, obj):
-        return time_since(obj.created_at)
+        created_at = obj.get('created_at') if isinstance(
+            obj, dict) else obj.created_at
+        return time_since(created_at)
 
 
 class ConversationConfigSerializer(serializers.ModelSerializer):
