@@ -1,4 +1,3 @@
-import openai
 import g4f
 from celery.utils.log import get_task_logger
 

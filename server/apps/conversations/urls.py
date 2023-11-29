@@ -5,13 +5,11 @@ from conversations.views.Conversations import (
     ConversationDetail,
     ConversationListCreate,
 )
-
 from conversations.views.Messages import (
     DeleteMessagesInConversationView,
     MessageCreate,
     MessageList,
 )
-
 
 urlpatterns = [
     # Retrieve, update conversation

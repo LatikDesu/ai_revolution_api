@@ -1,18 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import RetrieveAPIView
-from drf_yasg import openapi
 
 from conversations.models import Conversation, Message
-from conversations.serializers import (
-    MessageSerializer,
-    ConversationSerializer
-)
+from conversations.serializers import ConversationSerializer, MessageSerializer
 from conversations.tasks import send_gpt_request
 
 User = get_user_model()
@@ -70,7 +67,7 @@ class MessageList(RetrieveAPIView):
         operation_summary='Список сообщений в беседе.',
         operation_description="""
         ### Получает список всех сообщений из беседы аутентифицированного пользователя.
-        
+
         Значения:
         - `id`: id сообщения в формате uuid, \n
         - `conversation`: id чата в формате uuid,
@@ -173,10 +170,10 @@ class MessageCreate(generics.CreateAPIView):
         operation_summary='Отправить запрос к ChatGPT.',
         operation_description='''
         ### Создает сообщение от имени пользователя к ChatGPT.
-        
+
         Доступные параметры:
         - `content`: текст запроса, \n
-        - `regenerate`: флаг, определяющий нужно ли пересоздать сообщение 
+        - `regenerate`: флаг, определяющий нужно ли пересоздать сообщение
         ''',
         manual_parameters=[
             openapi.Parameter(

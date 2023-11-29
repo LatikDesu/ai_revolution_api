@@ -1,12 +1,13 @@
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from django.contrib.auth.models import AnonymousUser
 
 from conversations.models import Conversation
 from conversations.serializers import (
@@ -40,7 +41,7 @@ class ConversationListCreate(generics.ListCreateAPIView):
         operation_summary='Список всех чатов аутентифицированного пользователя.',
         operation_description="""
         ### Получает список всех чатов, созданных аутентифицированным пользователем.
-        
+
         Значения:
         - `id`: id чата в формате uuid, \n
         - `title`: Заголовок чата,
@@ -65,7 +66,7 @@ class ConversationListCreate(generics.ListCreateAPIView):
         operation_summary='Создание нового чата аутентифицированного пользователя.',
         operation_description='''
         ### Создает новый чат для аутентифицированного пользователя.
-        
+
         Доступные параметры:
         - `title`: Заголовок чата (`default` = "Новый чат"), \n
         - `model`: Используемая модель (`default` = "gpt-3.5-turbo-0613"),
@@ -106,7 +107,7 @@ class ConversationDetail(generics.UpdateAPIView):
         operation_summary='Обновление данных чата аутентифицированного пользователя.',
         operation_description='''
         ### Обновление данных для конкретного чата аутентифицированного пользователя.
-        
+
         Доступные параметры:
         - `title`: Заголовок чата, \n
         - `model`: Используемая модель,
@@ -149,6 +150,7 @@ class ConversationDelete(APIView):
                    404: 'Not Found'},
     )
     def delete(self, request, conversation_id):
+
         conversation = get_object_or_404(
             Conversation, id=conversation_id, user=request.user)
         conversation.delete()

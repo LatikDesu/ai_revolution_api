@@ -1,9 +1,9 @@
 import sys
 from os import getenv, path
 from pathlib import Path
-from corsheaders.defaults import default_headers
 
 import dotenv
+from corsheaders.defaults import default_headers
 from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
