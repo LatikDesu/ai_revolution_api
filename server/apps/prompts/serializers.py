@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from prompts.models import SystemPrompt, UserPrompt
+from prompts.models import SystemPrompt
 
 
 class SystemPromptSerializer(serializers.ModelSerializer):
@@ -8,13 +8,3 @@ class SystemPromptSerializer(serializers.ModelSerializer):
         model = SystemPrompt
         fields = ('id', 'title', 'description', 'prompt')
         read_only_fields = ('id', 'title', 'description', 'prompt')
-
-
-class UserPromptSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserPrompt
-        fields = ('id', 'title', 'description', 'prompt')
-        read_only_fields = ('id',)
-
-    def create(self, validated_data):
-        return UserPrompt.objects.create(**validated_data)

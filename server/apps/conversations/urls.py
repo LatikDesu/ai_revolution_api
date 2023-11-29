@@ -5,12 +5,7 @@ from conversations.views.Conversations import (
     ConversationDetail,
     ConversationListCreate,
 )
-from conversations.views.Folders import (
-    FolderCreateView,
-    FolderDeleteView,
-    FolderListView,
-    FolderUpdateView,
-)
+
 from conversations.views.Messages import (
     DeleteMessagesInConversationView,
     MessageCreate,
@@ -42,19 +37,5 @@ urlpatterns = [
     # Clear messages in a conversation
     path('<uuid:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
          name='delete-messages-in-conversation'),
-
-    # List user folders
-    path('folders/list/', FolderListView.as_view(), name='folder-list'),
-
-    # Create user folder
-    path('folders/create/', FolderCreateView.as_view(), name='folder-create'),
-
-    # Update user folder
-    path('folders/<uuid:pk>/title/',
-         FolderUpdateView.as_view(), name='folder-update'),
-
-    # Delete user folder
-    path('folders/<uuid:pk>/delete/',
-         FolderDeleteView.as_view(), name='folder-delete'),
 
 ]

@@ -14,14 +14,14 @@ class SystemPromptList(generics.ListAPIView):
     @swagger_auto_schema(
         tags=['System prompts'],
         responses={200: SystemPromptSerializer(many=True), },
-        operation_summary='Список системных ролей.',
+        operation_summary='Список системных промптов.',
         operation_description='''
-        ### Получает все системные роли. Загружаются из файла/вносятся через административную панель.
+        ### Получает все системные промпты. Загружаются из файла/вносятся через административную панель.
         
         Значения:
-        - `id`: id роли, \n
-        - `title` - Название роли
-        - `description` - Краткое описание роли
+        - `id`: id записи, \n
+        - `title` - Название промпта
+        - `description` - Краткое описание промпта
         - `prompt` - Текст системного промта для запроса к chatGPT
         '''
     )

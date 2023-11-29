@@ -8,7 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.auth.models import AnonymousUser
 
-from conversations.models import Conversation, Message
+from conversations.models import Conversation
 from conversations.serializers import (
     ConversationConfigSerializer,
     ConversationSerializer,
@@ -29,11 +29,14 @@ class ConversationListCreate(generics.ListCreateAPIView):
         user = self.request.user
         if isinstance(user, AnonymousUser):
             return Response([])
-        return Conversation.objects.filter(user=user).order_by('created_at')
+        return Conversation.objects.filter(user=user).order_by('-updatedAt')
 
     @swagger_auto_schema(
         tags=['Conversations'],
-        responses={200: ConversationSerializer(many=True)},
+        responses={200: ConversationSerializer(many=True),
+                   400: 'Bad Request',
+                   403: 'Forbidden',
+                   404: 'Not Found'},
         operation_summary='Список всех чатов аутентифицированного пользователя.',
         operation_description="""
         ### Получает список всех чатов, созданных аутентифицированным пользователем.
@@ -44,10 +47,9 @@ class ConversationListCreate(generics.ListCreateAPIView):
         - `model`: Используемая модель,
         - `prompt`: Системный промт,
         - `tokenLimit`: Ограничение токенов в ответе,
-        - `maxLength`: Ограничение размера чата в токенах,
         - `temperature`: Температура ответа,
-        - `created_at`: Дата создания,
-        - `folder`: Папка где хранится чат
+        - `createdAt`: Дата создания,
+        - `updatedAt`: Дата обновления
         """
     )
     def get(self, request, *args, **kwargs):
@@ -56,7 +58,10 @@ class ConversationListCreate(generics.ListCreateAPIView):
     @swagger_auto_schema(
         tags=['Conversations'],
         request_body=ConversationSerializer,
-        responses={201: ConversationSerializer, },
+        responses={201: ConversationSerializer,
+                   400: 'Bad Request',
+                   403: 'Forbidden',
+                   404: 'Not Found'},
         operation_summary='Создание нового чата аутентифицированного пользователя.',
         operation_description='''
         ### Создает новый чат для аутентифицированного пользователя.
@@ -66,9 +71,7 @@ class ConversationListCreate(generics.ListCreateAPIView):
         - `model`: Используемая модель (`default` = "gpt-3.5-turbo-0613"),
         - `prompt`: Системный промт (`default` = "You are ChatGPT, a large language model trained by OpenAI. Follow the - user's instructions carefully. Respond using markdown. Respond in the language of the request"),
         - `tokenLimit`: Ограничение токенов в ответе (`default` = 1000),
-        - `maxLength`: Ограничение размера чата в токенах (`default` = 10000),
         - `temperature`: Температура ответа (`default` = 0,7),
-        - `folder`: Папка где хранится чат (`default` = null)
         '''
     )
     def post(self, request, *args, **kwargs):
@@ -109,9 +112,7 @@ class ConversationDetail(generics.UpdateAPIView):
         - `model`: Используемая модель,
         - `prompt`: Системный промт,
         - `tokenLimit`: Ограничение токенов в ответе,
-        - `maxLength`: Ограничение размера чата в токенах,
         - `temperature`: Температура ответа,
-        - `folder`: Папка где хранится чат
         '''
     )
     def patch(self, request, *args, **kwargs):
