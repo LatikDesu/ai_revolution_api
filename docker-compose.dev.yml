@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    volumes:
+      - static:/app/server/static
+    restart: always
+    ports:
+      - 8100:8100
+    env_file:
+      - ./server/.env
+
+volumes:
+  static:
