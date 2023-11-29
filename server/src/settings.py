@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
 ]
 
-INSTALLED_APPS.extend(['users', 'prompts', 'notekeeper',
+INSTALLED_APPS.extend(['users', 'prompts',
                       'conversations'])  # local apps
 INSTALLED_APPS.extend(['corsheaders', 'rest_framework', 'drf_yasg', 'djoser',
                       'social_django'])  # installed apps
@@ -81,7 +81,7 @@ TEMPLATES = [
 
 # Domain names
 DOMAIN = getenv('DOMAIN')
-SITE_NAME = 'AI Revolution'
+SITE_NAME = 'CREACRAFT'
 SITE_ID = int(getenv('SITE_ID', 1))
 SITE_URL = getenv('SITE_URL', 'http://localhost:8100')
 
@@ -209,17 +209,6 @@ DJOSER = {
         'current_user': 'users.serializers.CustomUserSerializer',
     }
 }
-
-# Celery Configuration Options
-CELERY_BROKER_URL = getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = getenv('CELERY_RESULT_BACKEND')
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
 
 # Sending emails
 DEFAULT_FROM_EMAIL = getenv('DEFAULT_FROM_EMAIL')
