@@ -5,18 +5,13 @@ from conversations.views.Conversations import (
     ConversationDetail,
     ConversationListCreate,
 )
-from conversations.views.Folders import (
-    FolderCreateView,
-    FolderDeleteView,
-    FolderListView,
-    FolderUpdateView,
-)
 from conversations.views.Messages import (
     DeleteMessagesInConversationView,
     MessageCreate,
+    MessageRegenerate,
     MessageList,
+    MessageDelete,
 )
-
 
 urlpatterns = [
     # Retrieve, update conversation
@@ -32,29 +27,23 @@ urlpatterns = [
          ConversationDelete.as_view(), name='conversation-delete'),
 
     # List messages in a conversation
-    path('<uuid:conversation_id>/messages/',
+    path('<uuid:conversation_id>/messages/list/',
          MessageList.as_view(), name='message-list'),
 
     # Create a message in a conversation
     path('<uuid:conversation_id>/messages/create/',
          MessageCreate.as_view(), name='message-create'),
 
+    # Regenerate a message in a conversation
+    path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
+         MessageRegenerate.as_view(), name='message-regenerate'),
+
+    # Delete a message in a conversation
+    path('<uuid:conversation_id>/<uuid:message_id>/delete/',
+         MessageDelete.as_view(), name='message-delete'),
+
     # Clear messages in a conversation
     path('<uuid:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
          name='delete-messages-in-conversation'),
-
-    # List user folders
-    path('folders/list/', FolderListView.as_view(), name='folder-list'),
-
-    # Create user folder
-    path('folders/create/', FolderCreateView.as_view(), name='folder-create'),
-
-    # Update user folder
-    path('folders/<uuid:pk>/title/',
-         FolderUpdateView.as_view(), name='folder-update'),
-
-    # Delete user folder
-    path('folders/<uuid:pk>/delete/',
-         FolderDeleteView.as_view(), name='folder-delete'),
 
 ]

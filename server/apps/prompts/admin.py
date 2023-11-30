@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import SystemPrompt, UserPrompt
+from .models import SystemPrompt
 
 
 class SystemPromptsAdmin(admin.ModelAdmin):
@@ -26,30 +26,4 @@ class SystemPromptsAdmin(admin.ModelAdmin):
     ordering = ("id",)
 
 
-class UserPromptsAdmin(admin.ModelAdmin):
-    model = UserPrompt
-
-    list_display = (
-        'title',
-        'description',
-        'user'
-    )
-    fieldsets = (
-        (
-            None,
-            {
-                "fields": (
-                    "title",
-                    "description",
-                    "prompt",
-                    "user",
-                )
-            },
-        ),
-    )
-    search_fields = ("title",)
-    ordering = ("id",)
-
-
 admin.site.register(SystemPrompt, SystemPromptsAdmin)
-admin.site.register(UserPrompt, UserPromptsAdmin)
