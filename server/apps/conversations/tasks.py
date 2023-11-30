@@ -48,7 +48,8 @@ def send_gpt_request(message_list, config, stream=True):
     return "Извините, мои нейроны не понимают вас. Пожалуйста, попробуйте еще раз."
 
 
-def event_stream(generator):
+async def event_stream(generator):
     for chunk in generator:
+        logger.info("Response: %s", chunk)
         yield f"response: {chunk}\n\n"
 

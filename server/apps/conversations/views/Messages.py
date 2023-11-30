@@ -1,20 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from django.http import StreamingHttpResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from celery.utils.log import get_task_logger
 
 from conversations.models import Conversation, Message
 from conversations.serializers import ConversationSerializer, MessageSerializer
 from conversations.tasks import send_gpt_request, event_stream
 
 User = get_user_model()
-logger = get_task_logger(__name__)
 
 
 class MessageList(RetrieveAPIView):
@@ -77,14 +76,11 @@ class MessageCreate(generics.CreateAPIView):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, request, serializer):
+    def perform_create(self, request, serializer, stream):
         conversation = get_object_or_404(
             Conversation, id=self.kwargs['conversation_id'], user=self.request.user)
 
         serializer.save(conversation=conversation, isFromUser=True)
-
-        stream = request.data.get('stream', True)
-        regenerate = request.data.get('regenerate', False)
 
         # Retrieve the last 5 messages from the conversation
         messages = Message.objects.filter(
@@ -110,17 +106,27 @@ class MessageCreate(generics.CreateAPIView):
         return [response, conversation.id, messages[0].id]
 
     def create(self, request, *args, **kwargs):
+        # Получаем данные из тела запроса
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        stream = request.data.get('stream', True)
+
+        # Отправляем запрос в GPT
         response_list = self.perform_create(
-            request=request, serializer=serializer)
+            request=request, serializer=serializer, stream=stream)
+
+        # Разбираем ответ
         assistant_response = response_list[0]
         conversation_id = response_list[1]
         last_user_message_id = response_list[2]
 
-        assistant_response_content = ""
-        for part in assistant_response:
-            assistant_response_content += part
+        if stream:
+            assistant_response_content = ""
+            for part in assistant_response:
+                assistant_response_content += part
+
+        else:
+            assistant_response_content = assistant_response
 
         try:
             # Store GPT response as a message
@@ -140,8 +146,16 @@ class MessageCreate(generics.CreateAPIView):
             error = f"Failed to save GPT-3 response as a message: {error_mgs}"
             Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response({"response": assistant_response_content}, status=status.HTTP_200_OK, headers=headers)
+        # Return the response
+        if stream:
+            response = StreamingHttpResponse(
+                event_stream(assistant_response), content_type="text/event-stream")
+            response['X-Accel-Buffering'] = 'no'
+            response['Cache-Control'] = 'no-cache'
+            return response
+        else:
+            headers = self.get_success_headers(serializer.data)
+            return Response({"response": assistant_response_content}, status=status.HTTP_200_OK, headers=headers)
 
     @swagger_auto_schema(
         tags=['Conversation messages'],
@@ -153,8 +167,7 @@ class MessageCreate(generics.CreateAPIView):
 
         Доступные параметры:
         - `content`: текст запроса, \n
-        - `stream`: флаг, определяющий нужно ли возвращать ответ потоком (`default` = True),
-        - `regenerate`: флаг, определяющий нужно ли пересоздать сообщение (`default` = False)
+        - `stream`: флаг, определяющий нужно ли возвращать ответ потоком (`default` = True)
         ''',
         manual_parameters=[
             openapi.Parameter(
