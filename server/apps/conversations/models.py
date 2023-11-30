@@ -17,7 +17,7 @@ class Conversation(models.Model):
 
     model = models.CharField(max_length=255, default="GPT-35")
     prompt = models.TextField(
-        null=True, blank=True, default="You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown. Respond in the language of the request")
+        null=True, blank=True, default="You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown. Respond in the language of the request. The assistant is helpful, creative, clever, and very friendly. Ask your questions in Markdown format.")
     tokenLimit = models.IntegerField(default=1000)
     temperature = models.FloatField(default=0.7)
 

@@ -25,7 +25,7 @@ urlpatterns = [
          ConversationDelete.as_view(), name='conversation-delete'),
 
     # List messages in a conversation
-    path('<uuid:conversation_id>/messages/',
+    path('<uuid:conversation_id>/messages/list/',
          MessageList.as_view(), name='message-list'),
 
     # Create a message in a conversation
