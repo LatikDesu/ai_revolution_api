@@ -104,7 +104,7 @@ class MessageCreate(generics.CreateAPIView):
 
         response = send_gpt_request(message_list, config, stream)
 
-        return [response, conversation.id, messages[0].id]
+        return [response, conversation.id, messages[-1].id]
 
     def create(self, request, *args, **kwargs):
         # Получаем данные из тела запроса
@@ -148,15 +148,15 @@ class MessageCreate(generics.CreateAPIView):
             Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
 
         # Return the response
-        if stream:
-            response = StreamingHttpResponse(
-                event_stream(assistant_response), content_type="text/event-stream")
-            response['X-Accel-Buffering'] = 'no'
-            response['Cache-Control'] = 'no-cache'
-            return response
-        else:
+        if not stream:
             headers = self.get_success_headers(serializer.data)
             return Response({"response": assistant_response_content}, status=status.HTTP_200_OK, headers=headers)
+
+        response = StreamingHttpResponse(
+            event_stream(assistant_response), content_type="text/event-stream")
+        response['X-Accel-Buffering'] = 'no'
+        response['Cache-Control'] = 'no-cache'
+        return response
 
     @swagger_auto_schema(
         tags=['Conversation messages'],
@@ -250,3 +250,69 @@ class MessageDelete(APIView):
             )
             message.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MessageRegenerate(APIView):
+    """
+    Regenerate a message.
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=['Conversation messages'],
+        operation_summary='Перегенерация сообщения в чате.',
+        operation_description='### Перегенерация конкретного сообщения в чате аутентифицированного пользователя.',
+        manual_parameters=[
+            openapi.Parameter(
+                'conversation_id',
+                openapi.IN_PATH,
+                description='ID чата, где нужно перегенерировать.',
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                'message_id',
+                openapi.IN_PATH,
+                description='ID сообщения, которое нужно перегенерировать.',
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: MessageSerializer,
+                   403: 'Forbidden',
+                   404: 'Not Found'},)
+    def patch(self, request, conversation_id, message_id):
+        conversation = get_object_or_404(
+            Conversation, id=conversation_id, user=request.user)
+        if conversation:
+            message = get_object_or_404(
+                Message,
+                id=message_id,
+            )
+
+            new_content = regenerate(conversation, message)
+
+            message.content = new_content
+            message.save()
+
+        return Response({"response": message.content}, status=status.HTTP_200_OK)
+
+
+def regenerate(conversation, message):
+    messages = Message.objects.filter(
+        conversation=message.conversation).order_by('-createdAt')[:5][::-1]
+
+    message_list = []
+    for msg in messages:
+        if msg.isFromUser:
+            message_list.append({"role": "user", "content": msg.content})
+        else:
+            message_list.append(
+                {"role": "assistant", "content": msg.content})
+
+    conversation_fields = ['model', 'prompt',
+                           'tokenLimit', 'temperature']
+    config = {field: getattr(conversation, field)
+              for field in conversation_fields}
+
+    response = send_gpt_request(message_list[:-1], config, stream=False)
+
+    return response

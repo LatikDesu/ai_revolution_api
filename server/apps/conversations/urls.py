@@ -8,8 +8,9 @@ from conversations.views.Conversations import (
 from conversations.views.Messages import (
     DeleteMessagesInConversationView,
     MessageCreate,
+    MessageRegenerate,
     MessageList,
-    MessageDelete
+    MessageDelete,
 )
 
 urlpatterns = [
@@ -32,6 +33,10 @@ urlpatterns = [
     # Create a message in a conversation
     path('<uuid:conversation_id>/messages/create/',
          MessageCreate.as_view(), name='message-create'),
+
+    # Regenerate a message in a conversation
+    path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
+         MessageRegenerate.as_view(), name='message-regenerate'),
 
     # Delete a message in a conversation
     path('<uuid:conversation_id>/<uuid:message_id>/delete/',
