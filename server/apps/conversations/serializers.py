@@ -7,13 +7,27 @@ class MessageSerializer(serializers.ModelSerializer):
     """
     Message serializer.
     """
+    stream = serializers.BooleanField(
+        default=True, required=False)
+    regenerate = serializers.BooleanField(
+        default=False, required=False)
+    
+    def create(self, validated_data):
+        stream = validated_data.pop('stream', None)
+        regenerate = validated_data.pop('regenerate', None)
+        
+        return Message.objects.create(**validated_data)
 
     class Meta:
         model = Message
         fields = ['id', 'conversation', 'content',
-                  'isFromUser', 'inReplyTo', 'createdAt', ]
+                  'isFromUser', 'inReplyTo', 'createdAt', 'stream', 'regenerate']
         read_only_fields = ('id', 'conversation',
                             'isFromUser', 'inReplyTo', 'createdAt', )
+        extra_kwargs = {
+            'stream': {'write_only': True},
+            'regenerate': {'write_only': True},
+        }
 
 
 class ConversationSerializer(serializers.ModelSerializer):
