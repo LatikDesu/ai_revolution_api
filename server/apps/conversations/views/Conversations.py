@@ -154,4 +154,4 @@ class ConversationDelete(APIView):
         conversation = get_object_or_404(
             Conversation, id=conversation_id, user=request.user)
         conversation.delete()
-        return Response({"message": "conversation deleted"}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
