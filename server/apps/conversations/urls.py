@@ -1,34 +1,48 @@
 from django.urls import path
 
-from conversations.views.Conversations import (
-    ConversationDelete,
-    ConversationDetail,
-    ConversationListCreate,
-)
 from conversations.views.Messages import (
-    DeleteMessagesInConversationView,
     MessageCreate,
     MessageRegenerate,
-    MessageList,
-    MessageDelete,
 )
 
-urlpatterns = [
-    # Retrieve, update conversation
-    path('<uuid:conversation_id>/config/', ConversationDetail.as_view(),
-         name='conversation-detail'),
+from conversations.views.ChatListCreate import ChatListCreate
+from conversations.views.ChatConfigUpdate import ChatConfigUpdate
+from conversations.views.ChatDelete import ChatDelete
+from conversations.views.ChatMessagesDelete import DeleteMessagesInChatView
 
-    # List and create conversations
-    path('', ConversationListCreate.as_view(),
-         name='conversation-list-create'),
+from conversations.views.MessagesList import MessagesList
+from conversations.views.MessageDelete import MessageDelete
+
+
+urlpatterns = [
+
+    # Create and list chats
+    path('', ChatListCreate.as_view(),
+         name='chats-list-create'),
+
+    # Retrieve, update conversation
+    path('<uuid:conversation_id>/config/', ChatConfigUpdate.as_view(),
+         name='chat-config-update'),
 
     # Delete a conversation
     path('<uuid:conversation_id>/delete/',
-         ConversationDelete.as_view(), name='conversation-delete'),
+         ChatDelete.as_view(), name='chat-delete'),
 
-    # List messages in a conversation
+    # Clear messages in a chat
+    path('<uuid:conversation_id>/clear/', DeleteMessagesInChatView.as_view(),
+         name='delete-messages-in-chat'),
+
+
+    # List messages in a current chat
     path('<uuid:conversation_id>/messages/list/',
-         MessageList.as_view(), name='message-list'),
+         MessagesList.as_view(), name='chat-messages-list'),
+
+    # Delete a message in a current chat
+    path('<uuid:conversation_id>/<uuid:message_id>/delete/',
+         MessageDelete.as_view(), name='message-delete'),
+
+
+
 
     # Create a message in a conversation
     path('<uuid:conversation_id>/messages/create/',
@@ -38,12 +52,8 @@ urlpatterns = [
     path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
          MessageRegenerate.as_view(), name='message-regenerate'),
 
-    # Delete a message in a conversation
-    path('<uuid:conversation_id>/<uuid:message_id>/delete/',
-         MessageDelete.as_view(), name='message-delete'),
 
-    # Clear messages in a conversation
-    path('<uuid:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
-         name='delete-messages-in-conversation'),
+
+
 
 ]

@@ -170,10 +170,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 # REST_FRAMEWORK Config
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',
-                                'rest_framework.filters.OrderingFilter'],
-    'PAGE_SIZE': int(getenv('DJANGO_PAGINATION_LIMIT', 40)),
     'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ',
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',

@@ -7,23 +7,23 @@ class MessageSerializer(serializers.ModelSerializer):
     """
     Message serializer.
     """
-    stream = serializers.BooleanField(
-        default=True, required=False)
-
-    def create(self, validated_data):
-        stream = validated_data.pop('stream', None)
-
-        return Message.objects.create(**validated_data)
 
     class Meta:
         model = Message
         fields = ['id', 'conversation', 'content',
-                  'isFromUser', 'inReplyTo', 'createdAt', 'stream',]
-        read_only_fields = ('id', 'conversation',
-                            'isFromUser', 'inReplyTo', 'createdAt', )
-        extra_kwargs = {
-            'stream': {'write_only': True},
-        }
+                  'role', 'createdAt',]
+        read_only_fields = ('id', 'createdAt', )
+
+
+class ConversationListSerializer(serializers.ModelSerializer):
+    """
+    Conversation list serializer.
+    """
+
+    class Meta:
+        model = Conversation
+        fields = ['id', 'title', 'createdAt', 'updatedAt']
+        ordering = ('updatedAt')
 
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -34,8 +34,8 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ['id', 'title', 'model', 'prompt', 'tokenLimit',
-                  'temperature', 'createdAt', 'updatedAt', 'messages']
+        fields = ['id', 'title', 'model', 'prompt', 'maxTokens',
+                  'temperature', 'topP', 'frequencyPenalty', 'presencePenalty',  'createdAt', 'updatedAt', 'messages']
 
 
 class ConversationConfigSerializer(serializers.ModelSerializer):
@@ -44,5 +44,5 @@ class ConversationConfigSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Conversation
-        fields = ['id', 'title', 'model', 'prompt', 'tokenLimit',
-                  'temperature']
+        fields = ['id', 'title', 'model', 'prompt', 'maxTokens',
+                  'temperature', 'topP', 'frequencyPenalty', 'presencePenalty',]
