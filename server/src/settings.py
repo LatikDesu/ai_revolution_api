@@ -20,6 +20,7 @@ if path.isfile(dotenv_file):
 DEVELOPMENT_MODE = getenv('DEVELOPMENT_MODE', 'False') == 'True'
 
 APIKEY = getenv('OPENAI_APIKEY')
+PROXY_URL = getenv('PROXY_URL')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
