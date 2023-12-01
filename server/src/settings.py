@@ -270,9 +270,9 @@ CSRF_TRUSTED_ORIGIN = CSRF_TRUSTED_ORIGIN.split(',')
 CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGIN
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CSRFToken',
+    'X-CSRFToken', 'Accept',
 ]
-CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_EXPOSE_HEADERS = ['Accept', 'Content-Type', 'X-CSRFToken']
 
 X_FRAME_OPTIONS = getenv('X_FRAME_OPTIONS', 'DENY')
 SECURE_BROWSER_XSS_FILTER = bool(getenv('SECURE_BROWSER_XSS_FILTER', True))

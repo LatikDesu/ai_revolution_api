@@ -41,7 +41,7 @@ def send_gpt_request(message_list, config):
     return "Извините, мои нейроны не понимают вас. Пожалуйста, попробуйте еще раз."
 
 
-def event_stream(generator):
+async def event_stream(generator):
     for chunk in generator:
         if chunk.choices[0].delta.content is not None:
-            yield f"{chunk.choices[0].delta.content}\n\n"
+            yield f'data: {chunk.choices[0].delta.content}\n\n'

@@ -4,9 +4,18 @@ from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
+from rest_framework.renderers import BaseRenderer
 
 from conversations.tasks import event_stream, send_gpt_request
 from conversations.models import Conversation, Message
+
+
+class ServerSentEventRenderer(BaseRenderer):
+    media_type = "text/event-stream"
+    format = "txt"
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
 
 
 class ChatCompletionStream(APIView):
@@ -14,6 +23,7 @@ class ChatCompletionStream(APIView):
     Send a request to OpenAI API.
     """
     permission_classes = [IsAuthenticated]
+    renderer_classes = [ServerSentEventRenderer]
 
     @swagger_auto_schema(
         tags=['GPT API'],
