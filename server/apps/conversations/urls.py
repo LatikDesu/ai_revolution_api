@@ -10,8 +10,10 @@ from conversations.views.ChatDelete import ChatDelete
 from conversations.views.ChatMessagesDelete import DeleteMessagesInChatView
 
 from conversations.views.MessagesList import MessagesList
-from conversations.views.MessageDelete import MessageDelete
 from conversations.views.MessageCreate import MessageCreate
+from conversations.views.MessageDelete import MessageDelete
+
+from conversations.views.ChatCompletionStream import ChatCompletionStream
 
 
 urlpatterns = [
@@ -45,14 +47,18 @@ urlpatterns = [
     path('<uuid:conversation_id>/<uuid:message_id>/delete/',
          MessageDelete.as_view(), name='message-delete'),
 
+    # Request for GPT
+    path('<uuid:conversation_id>/stream/', ChatCompletionStream.as_view(), name='chat-stream'),
 
 
 
 
 
-    # Regenerate a message in a conversation
-    path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
-         MessageRegenerate.as_view(), name='message-regenerate'),
+
+
+    #     # Regenerate a message in a conversation
+    #     path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
+    #          MessageRegenerate.as_view(), name='message-regenerate'),
 
 
 

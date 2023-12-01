@@ -1,55 +1,47 @@
-import g4f
-from celery.utils.log import get_task_logger
-
-providers = [
-    # GPT-3.5
-    g4f.Provider.FreeGpt,
-    g4f.Provider.ChatForAi,
-    g4f.Provider.MyShell,
-    g4f.Provider.ChatgptAi,
-    g4f.Provider.ChatBase,
-    # GPT-4
-    g4f.Provider.Bing,
-]
-
-logger = get_task_logger(__name__)
-g4f.debug.logging = True
+from openai import OpenAI
+import httpx
+from src.settings import APIKEY, PROXY_URL
 
 
-def send_gpt_request(message_list, config, stream=True):
+proxies = {
+    "all://": PROXY_URL,
+}
 
-    if config['model'] == 'GPT-35':
-        model = g4f.models.gpt_35_long
-    else:
-        model = g4f.models.gpt_4
+client = OpenAI(
+    api_key=APIKEY,
+    http_client=httpx.Client(proxies=proxies),
+)
 
-    # for items in providers:
+
+def send_gpt_request(message_list, config):
+
     try:
-        response = g4f.ChatCompletion.create(
-            model=model,
-            # provider=items,
-            max_tokens=config['tokenLimit'],
+        response = client.chat.completions.create(
+            model=config['model'],
             temperature=config['temperature'],
+            max_tokens=config['maxTokens'],
+            top_p=config['topP'],
+            frequency_penalty=config['frequencyPenalty'],
+            presence_penalty=config['presencePenalty'],
+            stream=True,
             messages=[
                 {"role": "system",
                     "content": f"{config['prompt']}",
                     "role": "user",
                     "content": f"The response should be returned in markdown formatting."},
             ] + message_list,
-            stream=stream,)
+        )
 
         if response:
             return response
 
     except Exception as e:
-        logger.error(f"Failed to send request to GPT-3.5: {e}")
-        # continue
+        return "Извините, мои нейроны не понимают вас. Пожалуйста, попробуйте еще раз."
 
     return "Извините, мои нейроны не понимают вас. Пожалуйста, попробуйте еще раз."
 
 
-async def event_stream(generator):
+def event_stream(generator):
     for chunk in generator:
-        logger.info("Response: %s", chunk)
-        yield f"response: {chunk}\n\n"
-
+        if chunk.choices[0].delta.content is not None:
+            yield f"{chunk.choices[0].delta.content}\n\n"

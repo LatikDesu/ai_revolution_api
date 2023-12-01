@@ -25,7 +25,6 @@ class MessagesList(RetrieveAPIView):
         operation_id='chat_messages_list',
         responses={200: ConversationSerializer},
         operation_summary='Список сообщений в выбраном чате.',
-
         manual_parameters=[
             openapi.Parameter(
                 'conversation_id',
