@@ -1,7 +1,6 @@
 from django.urls import path
 
 from conversations.views.Messages import (
-    MessageCreate,
     MessageRegenerate,
 )
 
@@ -12,6 +11,7 @@ from conversations.views.ChatMessagesDelete import DeleteMessagesInChatView
 
 from conversations.views.MessagesList import MessagesList
 from conversations.views.MessageDelete import MessageDelete
+from conversations.views.MessageCreate import MessageCreate
 
 
 urlpatterns = [
@@ -37,6 +37,10 @@ urlpatterns = [
     path('<uuid:conversation_id>/messages/list/',
          MessagesList.as_view(), name='chat-messages-list'),
 
+    # Create a message in a conversation
+    path('<uuid:conversation_id>/messages/create/',
+         MessageCreate.as_view(), name='message-create'),
+
     # Delete a message in a current chat
     path('<uuid:conversation_id>/<uuid:message_id>/delete/',
          MessageDelete.as_view(), name='message-delete'),
@@ -44,9 +48,7 @@ urlpatterns = [
 
 
 
-    # Create a message in a conversation
-    path('<uuid:conversation_id>/messages/create/',
-         MessageCreate.as_view(), name='message-create'),
+
 
     # Regenerate a message in a conversation
     path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',

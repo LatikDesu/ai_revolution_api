@@ -50,6 +50,11 @@ class ChatListCreate(generics.ListCreateAPIView):
         """
         return self.list(request, *args, **kwargs)
 
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = ConversationListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     @swagger_auto_schema(
         tags=['Conversations'],
         operation_id='chat_create',

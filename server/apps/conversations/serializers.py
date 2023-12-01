@@ -8,11 +8,16 @@ class MessageSerializer(serializers.ModelSerializer):
     Message serializer.
     """
 
+    def validate_role(self, value):
+        if value not in ['user', 'assistant']:
+            raise serializers.ValidationError('Invalid role type')
+        return value
+
     class Meta:
         model = Message
         fields = ['id', 'conversation', 'content',
                   'role', 'createdAt',]
-        read_only_fields = ('id', 'createdAt', )
+        read_only_fields = ('id', 'conversation', 'createdAt', )
 
 
 class ConversationListSerializer(serializers.ModelSerializer):
