@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from rest_framework.renderers import BaseRenderer
 
-from conversations.tasks import event_stream, send_gpt_request
+from conversations.tasks import event_stream, send_gpt_request, send_gpt_request_async
 from conversations.models import Conversation, Message
 
 
@@ -68,10 +68,10 @@ class ChatCompletionStream(APIView):
         config = {field: getattr(conversation, field)
                   for field in conversation_fields}
 
-        stream = send_gpt_request(message_list, config)
+        # stream = send_gpt_request(message_list, config)
 
         response = StreamingHttpResponse(
-            event_stream(stream), content_type="text/event-stream")
+            send_gpt_request_async(message_list, config), content_type="text/event-stream")
         response['X-Accel-Buffering'] = 'no'
         response['Cache-Control'] = 'no-cache'
 
