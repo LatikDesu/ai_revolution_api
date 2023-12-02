@@ -6,15 +6,16 @@ from prompts.serializers import SystemPromptSerializer
 
 
 class SystemPromptList(generics.ListAPIView):
-
     queryset = SystemPrompt.objects.all()
     serializer_class = SystemPromptSerializer
 
     @swagger_auto_schema(
-        tags=['System prompts'],
-        responses={200: SystemPromptSerializer(many=True), },
-        operation_summary='Список системных промптов.',
-        operation_description='''
+        tags=["System prompts"],
+        responses={
+            200: SystemPromptSerializer(many=True),
+        },
+        operation_summary="Список системных промптов.",
+        operation_description="""
         ### Получает все системные промпты. Загружаются из файла/вносятся через административную панель.
 
         Значения:
@@ -22,7 +23,7 @@ class SystemPromptList(generics.ListAPIView):
         - `title` - Название промпта
         - `description` - Краткое описание промпта
         - `prompt` - Текст системного промта для запроса к chatGPT
-        '''
+        """,
     )
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)

@@ -21,7 +21,6 @@ inflection==0.5.1
 jsonschema==4.19.1
 jsonschema-specifications==2023.7.1
 oauthlib==3.2.2
-openai==0.27.8
 packaging==23.2
 psycopg2-binary==2.9.9
 pycparser==2.21
@@ -51,3 +50,5 @@ itsdangerous
 celery
 celery[redis]
 g4f
+openai
+httpx

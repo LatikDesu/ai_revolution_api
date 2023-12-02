@@ -11,7 +11,7 @@ from .custom_schema import CustomSchemaGenerator
 schema_view = get_schema_view(
     openapi.Info(
         title="AI Revolution API",
-        default_version='v1',
+        default_version="v1",
         description="API for AI Revolution project",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="legas@yandex.ru"),
@@ -24,17 +24,17 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    path('api/v1/', include('djoser.urls')),
-    path('api/v1/users/', include('users.urls')),
-    path('api/v1/prompts/', include('prompts.urls')),
-    path('api/v1/conversations/', include('conversations.urls')),
-
-    path('api-auth/', include('rest_framework.urls')),
-
-    path('docs/', schema_view.with_ui('swagger',
-         cache_timeout=0), name='schema-swagger-ui'),
+    path("admin/", admin.site.urls),
+    path("api/v1/", include("djoser.urls")),
+    path("api/v1/users/", include("users.urls")),
+    path("api/v1/prompts/", include("prompts.urls")),
+    path("api/v1/conversations/", include("conversations.urls")),
+    path("api-auth/", include("rest_framework.urls")),
+    path(
+        "docs/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

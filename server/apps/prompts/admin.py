@@ -7,8 +7,8 @@ class SystemPromptsAdmin(admin.ModelAdmin):
     model = SystemPrompt
 
     list_display = (
-        'title',
-        'description',
+        "title",
+        "description",
     )
     fieldsets = (
         (

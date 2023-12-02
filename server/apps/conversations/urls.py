@@ -1,49 +1,61 @@
 from django.urls import path
 
-from conversations.views.Conversations import (
-    ConversationDelete,
-    ConversationDetail,
-    ConversationListCreate,
-)
-from conversations.views.Messages import (
-    DeleteMessagesInConversationView,
-    MessageCreate,
-    MessageRegenerate,
-    MessageList,
-    MessageDelete,
-)
+from conversations.views.ChatCompletionStream import ChatCompletionStream
+from conversations.views.ChatConfigUpdate import ChatConfigUpdate
+from conversations.views.ChatDelete import ChatDelete
+from conversations.views.ChatListCreate import ChatListCreate
+from conversations.views.ChatMessagesDelete import DeleteMessagesInChatView
+from conversations.views.MessageCreate import MessageCreate
+from conversations.views.MessageDelete import MessageDelete
+from conversations.views.MessagesList import MessagesList
 
 urlpatterns = [
-    # Retrieve, update conversation
-    path('<uuid:conversation_id>/config/', ConversationDetail.as_view(),
-         name='conversation-detail'),
+    # Create and list chats
+    path("", ChatListCreate.as_view(), name="chats-list-create"),
 
-    # List and create conversations
-    path('', ConversationListCreate.as_view(),
-         name='conversation-list-create'),
+    # Retrieve, update conversation
+    path(
+        "<uuid:conversation_id>/config/",
+        ChatConfigUpdate.as_view(),
+        name="chat-config-update",
+    ),
 
     # Delete a conversation
-    path('<uuid:conversation_id>/delete/',
-         ConversationDelete.as_view(), name='conversation-delete'),
+    path("<uuid:conversation_id>/delete/",
+         ChatDelete.as_view(), name="chat-delete"),
 
-    # List messages in a conversation
-    path('<uuid:conversation_id>/messages/list/',
-         MessageList.as_view(), name='message-list'),
+    # Clear messages in a chat
+    path(
+        "<uuid:conversation_id>/clear/",
+        DeleteMessagesInChatView.as_view(),
+        name="delete-messages-in-chat",
+    ),
+
+    # List messages in a current chat
+    path(
+        "<uuid:conversation_id>/messages/list/",
+        MessagesList.as_view(),
+        name="chat-messages-list",
+    ),
 
     # Create a message in a conversation
-    path('<uuid:conversation_id>/messages/create/',
-         MessageCreate.as_view(), name='message-create'),
+    path(
+        "<uuid:conversation_id>/messages/create/",
+        MessageCreate.as_view(),
+        name="message-create",
+    ),
 
-    # Regenerate a message in a conversation
-    path('<uuid:conversation_id>/<uuid:message_id>/regenerate/',
-         MessageRegenerate.as_view(), name='message-regenerate'),
+    # Delete a message in a current chat
+    path(
+        "<uuid:conversation_id>/<uuid:message_id>/delete/",
+        MessageDelete.as_view(),
+        name="message-delete",
+    ),
 
-    # Delete a message in a conversation
-    path('<uuid:conversation_id>/<uuid:message_id>/delete/',
-         MessageDelete.as_view(), name='message-delete'),
-
-    # Clear messages in a conversation
-    path('<uuid:conversation_id>/clear/', DeleteMessagesInConversationView.as_view(),
-         name='delete-messages-in-conversation'),
-
+    # Request for GPT
+    path(
+        "<uuid:conversation_id>/stream/",
+        ChatCompletionStream.as_view(),
+        name="chat-stream",
+    ),
 ]

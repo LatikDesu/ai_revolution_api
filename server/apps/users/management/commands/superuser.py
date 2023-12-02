@@ -7,19 +7,19 @@ from django.core.management.base import BaseCommand, CommandError
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-dotenv_file = BASE_DIR / '.env'
+dotenv_file = BASE_DIR / ".env"
 
 if path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
 User = get_user_model()
 
-DJANGO_SUPERUSER_PASSWORD = getenv('DJANGO_SUPERUSER_PASSWORD')
-DJANGO_SUPERUSER_EMAIL = getenv('DJANGO_SUPERUSER_EMAIL')
+DJANGO_SUPERUSER_PASSWORD = getenv("DJANGO_SUPERUSER_PASSWORD")
+DJANGO_SUPERUSER_EMAIL = getenv("DJANGO_SUPERUSER_EMAIL")
 
 
 class Command(BaseCommand):
-    help = 'Create superuser'
+    help = "Create superuser"
 
     def handle(self, *args, **options):
         try:
@@ -31,7 +31,6 @@ class Command(BaseCommand):
             user.is_staff = True
             user.is_admin = True
             user.save()
-            self.stdout.write(self.style.SUCCESS(
-                'Superuser created successfully'))
+            self.stdout.write(self.style.SUCCESS("Superuser created successfully"))
         except Exception as e:
             raise CommandError(e)

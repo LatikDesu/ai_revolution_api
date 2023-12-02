@@ -6,16 +6,15 @@ class CustomSchemaGenerator(OpenAPISchemaGenerator):
         swagger = super().get_schema(request, public)
 
         excluded_endpoints = [
-            'users/set_email/',
-            'users/set_password/',
-            'users/reset_email/',
-            'users/reset_email_confirm/',
-            'users/{id}/',
-
+            "users/set_email/",
+            "users/set_password/",
+            "users/reset_email/",
+            "users/reset_email_confirm/",
+            "users/{id}/",
         ]
 
         paths = {}
-        for path, path_data in swagger['paths'].items():
+        for path, path_data in swagger["paths"].items():
             include_path = True
             for endpoint in excluded_endpoints:
                 if endpoint in path:
@@ -25,6 +24,6 @@ class CustomSchemaGenerator(OpenAPISchemaGenerator):
             if include_path:
                 paths[path] = path_data
 
-        swagger['paths'] = paths
+        swagger["paths"] = paths
 
         return swagger
