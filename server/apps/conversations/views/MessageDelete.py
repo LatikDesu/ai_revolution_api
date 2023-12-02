@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
@@ -17,34 +16,34 @@ class MessageDelete(APIView):
     """
     Delete a message.
     """
+
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        tags=['Conversation messages'],
-        operation_id='chat_message_delete',
-        operation_summary='Удаление сообщения из выбранного чата.',
-        operation_description='### Удаление конкретного сообщения из чата аутентифицированного пользователя.',
+        tags=["Conversation messages"],
+        operation_id="chat_message_delete",
+        operation_summary="Удаление сообщения из выбранного чата.",
+        operation_description="### Удаление конкретного сообщения из чата аутентифицированного пользователя.",
         manual_parameters=[
             openapi.Parameter(
-                'conversation_id',
+                "conversation_id",
                 openapi.IN_PATH,
-                description='ID чата, где нужно удалить.',
+                description="ID чата, где нужно удалить.",
                 type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                'message_id',
+                "message_id",
                 openapi.IN_PATH,
-                description='ID сообщения, которое нужно удалить.',
+                description="ID сообщения, которое нужно удалить.",
                 type=openapi.TYPE_STRING,
             ),
         ],
-        responses={204: 'NO CONTENT',
-                   403: 'FORBIDDEN',
-                   404: 'NOT FOUND'},
+        responses={204: "NO CONTENT", 403: "FORBIDDEN", 404: "NOT FOUND"},
     )
     def delete(self, request, conversation_id, message_id):
         conversation = get_object_or_404(
-            Conversation, id=conversation_id, user=request.user)
+            Conversation, id=conversation_id, user=request.user
+        )
         if conversation:
             message = get_object_or_404(
                 Message,

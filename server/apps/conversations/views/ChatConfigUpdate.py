@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from drf_yasg.utils import swagger_auto_schema
@@ -17,8 +16,9 @@ class ChatConfigUpdate(generics.UpdateAPIView):
     """
     Retrieve, update a config conversation.
     """
+
     serializer_class = ConversationConfigSerializer
-    lookup_url_kwarg = 'conversation_id'
+    lookup_url_kwarg = "conversation_id"
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -28,15 +28,16 @@ class ChatConfigUpdate(generics.UpdateAPIView):
         return Conversation.objects.filter(user=user)
 
     @swagger_auto_schema(
-        tags=['Conversations'],
-        operation_id='chat_config_update',
+        tags=["Conversations"],
+        operation_id="chat_config_update",
         request_body=ConversationConfigSerializer,
-        responses={201: ConversationConfigSerializer,
-                   400: 'BAD REQUEST',
-                   403: 'FORBIDDEN',
-                   404: 'NOT FOUND'},
-        operation_summary='Обновление данных чата аутентифицированного пользователя.',
-
+        responses={
+            201: ConversationConfigSerializer,
+            400: "BAD REQUEST",
+            403: "FORBIDDEN",
+            404: "NOT FOUND",
+        },
+        operation_summary="Обновление данных чата аутентифицированного пользователя.",
     )
     def patch(self, request, *args, **kwargs):
         """
@@ -47,7 +48,7 @@ class ChatConfigUpdate(generics.UpdateAPIView):
         - `model`: Используемая модель,
         - `prompt`: Системный промт,
         - `maxTokens`: Ограничение токенов в ответе,
-        - `temperature`: Температура ответа,    
+        - `temperature`: Температура ответа,
         - `topP`: topP,
         - `frequencyPenalty`: Штраф за частоту,
         - `presencePenalty`: Штраф за наличие.

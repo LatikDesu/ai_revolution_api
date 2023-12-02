@@ -1,4 +1,3 @@
-
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -15,20 +14,23 @@ class MessageCreate(APIView):
     """
     Save a message in current chat.
     """
+
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        tags=['Conversation messages'],
+        tags=["Conversation messages"],
         request_body=MessageSerializer,
-        responses={201: MessageSerializer, },
-        operation_id='chat_message_create',
-        operation_summary='Cохранить сообщение в текущий чат.',
+        responses={
+            201: MessageSerializer,
+        },
+        operation_id="chat_message_create",
+        operation_summary="Cохранить сообщение в текущий чат.",
         manual_parameters=[
             openapi.Parameter(
-                'conversation_id',
+                "conversation_id",
                 openapi.IN_PATH,
-                description='ID чата в котором работаем.',
+                description="ID чата в котором работаем.",
                 type=openapi.TYPE_STRING,
             ),
         ],
@@ -43,7 +45,8 @@ class MessageCreate(APIView):
         """
 
         conversation = get_object_or_404(
-            Conversation, id=self.kwargs['conversation_id'], user=self.request.user)
+            Conversation, id=self.kwargs["conversation_id"], user=self.request.user
+        )
 
         serializer = MessageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

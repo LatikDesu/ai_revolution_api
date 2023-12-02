@@ -12,32 +12,29 @@ User = get_user_model()
 
 
 class DeleteMessagesInChatView(generics.DestroyAPIView):
-
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
 
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        tags=['Conversations'],
-        operation_id='delete_messages_in_chat',
-        operation_summary='Очистка сообщений из указанного чата.',
+        tags=["Conversations"],
+        operation_id="delete_messages_in_chat",
+        operation_summary="Очистка сообщений из указанного чата.",
         manual_parameters=[
             openapi.Parameter(
-                'conversation_id',
+                "conversation_id",
                 openapi.IN_PATH,
-                description='ID чата, из которого нужно удалить сообщения.',
+                description="ID чата, из которого нужно удалить сообщения.",
                 type=openapi.TYPE_STRING,
             ),
         ],
-        responses={200: 'NO CONTENT',
-                   403: 'FORBIDDEN',
-                   404: 'NOT FOUND'},
+        responses={200: "NO CONTENT", 403: "FORBIDDEN", 404: "NOT FOUND"},
     )
     def delete(self, request, *args, **kwargs):
         """
         ### Удаление всех сообщений из чата аутентифицированного пользователя.
         """
-        conversation_id = self.kwargs['conversation_id']
+        conversation_id = self.kwargs["conversation_id"]
         Message.objects.filter(conversation_id=conversation_id).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
