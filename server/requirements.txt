@@ -47,8 +47,5 @@ django-cryptography
 markdown-checklist
 Unidecode
 itsdangerous 
-celery
-celery[redis]
-g4f
 openai
 httpx
