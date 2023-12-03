@@ -28,8 +28,6 @@ class CustomUserAdmin(UserAdmin):
                     "first_name",
                     "last_name",
                     "email",
-                    "gpt3_tokens",
-                    "gpt4_tokens",
                 )
             },
         ),
@@ -45,8 +43,7 @@ class CustomUserAdmin(UserAdmin):
                     "last_name",
                     "username",
                     "email",
-                    "password1",
-                    "password2",
+                    "password",
                     "is_staff",
                     "is_active",
                 ),
