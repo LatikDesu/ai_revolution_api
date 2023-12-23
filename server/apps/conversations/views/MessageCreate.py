@@ -51,6 +51,10 @@ class MessageCreate(APIView):
         serializer = MessageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        if request.data['role'] == 'assistant':
+            conversation.title = f"{request.data['content'][:24]}..."
+            conversation.save()
+
         serializer.save(conversation=conversation)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)

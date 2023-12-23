@@ -33,7 +33,6 @@ DEBUG = getenv('DJANGO_DEBUG', False) == 'True'
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,9 +81,9 @@ TEMPLATES = [
 
 # Domain names
 DOMAIN = getenv('DOMAIN')
-SITE_NAME = 'CREACRAFT'
+SITE_NAME = 'DEEPLINE'
 SITE_ID = int(getenv('SITE_ID', 1))
-SITE_URL = getenv('SITE_URL', 'http://localhost:8100')
+SITE_URL = getenv('SITE_URL', 'https://deep-line.ru')
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
@@ -199,7 +198,7 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'ACTIVATION_URL': 'activation/{uid}/{token}',
     # 'USER_CREATE_PASSWORD_RETYPE': True,
-    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    # 'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': getenv('REDIRECT_URLS').split(','),
     'SERIALIZERS': {

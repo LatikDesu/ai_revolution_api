@@ -27,7 +27,7 @@ services:
     env_file:
       - ./server/.env
     volumes:
-      - local_pg_data:/var/lib/postgresql/data
+      - ./local_pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
