@@ -52,7 +52,7 @@ class MessageCreate(APIView):
         serializer.is_valid(raise_exception=True)
 
         if request.data['role'] == 'assistant':
-            conversation.title = f"{request.data['content'][:20]}..."
+            conversation.title = f"{request.data['content'][:24]}..."
             conversation.save()
 
         serializer.save(conversation=conversation)

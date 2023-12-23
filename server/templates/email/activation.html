@@ -1,0 +1,30 @@
+{% load i18n %}
+
+{% block subject %}
+{% blocktrans %}Активация аккаунта {{ site_name }}{% endblocktrans %}
+{% endblock subject %}
+
+{% block text_body %}
+{% blocktrans %}Вы получили это письмо, потому что зарегистрировались на {{ site_name }} и необходимо завершить
+процесс активации учетной записи.{%endblocktrans %}
+
+{% trans "Пожалуйста, перейдите на следующую страницу для активации учетной записи:" %}
+{{ protocol }}://{{ domain }}/{{ url|safe }}
+
+{% trans "Спасибо за использование нашего сервиса!" %}
+
+{% blocktrans %}Команда {{ site_name }}{% endblocktrans %}
+{% endblock text_body %}
+
+{% block html_body %}
+<p>{% blocktrans %}Вы получили это письмо, потому что Вы зарегистрировались на {{ site_name }} и необходимо завершить
+    процесс активации учетной записи.{%endblocktrans %}</p>
+
+<p>{% trans "Пожалуйста, перейдите на следующую страницу для активации учетной записи:" %}</p>
+<p><a href="{{ protocol }}://{{ domain }}/{{ url|safe }}">{{ protocol }}://{{ domain }}/{{ url|safe }}</a></p>
+
+<p>{% trans "Спасибо за использование нашего сервиса!" %}</p>
+
+<p>{% blocktrans %}Команда {{ site_name }}{% endblocktrans %}</p>
+
+{% endblock html_body %}

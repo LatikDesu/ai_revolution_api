@@ -33,7 +33,6 @@ DEBUG = getenv('DJANGO_DEBUG', False) == 'True'
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,9 +81,9 @@ TEMPLATES = [
 
 # Domain names
 DOMAIN = getenv('DOMAIN')
-SITE_NAME = 'CREACRAFT'
+SITE_NAME = 'DEEPLINE'
 SITE_ID = int(getenv('SITE_ID', 1))
-SITE_URL = getenv('SITE_URL', 'http://localhost:8100')
+SITE_URL = getenv('SITE_URL', 'https://deep-line.ru')
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
